@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/22 17:09:16 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:32:02 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ void* routine(void *fork)
 	t_fork	*j;
 	j = (t_fork *)fork;
 	printf("Test from thread %d\n",j[1].fork);
-	//free(fork);
 	return(NULL);
 }
 
@@ -57,8 +56,6 @@ t_philo *ft_philocreate(int p, t_fork *fork)
 	while(i < p)
 	{
 		philo[i].id = i;
-		// t_fork *a = malloc(sizeof(fork));
-		// *a = i;
 		pthread_create(&philo[i].thread, NULL, &routine, fork);
 		philo[i].last_eat = 20;
 		i++;
