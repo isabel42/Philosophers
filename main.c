@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/23 15:46:41 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/05/24 16:13:29 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,29 +42,30 @@ void* routine(void *philo_fork)
 	t_fork	*fork;
 	t_philo	philo;
 	t_philofork philo_fork_new;
-	struct timeval current_time;
 	philo_fork_new = *(t_philofork *)philo_fork;
 	philo = philo_fork_new.philo;
 	fork = philo_fork_new.fork;
 	for(int i = 0; i < 1; i++)
 	{
-		pthread_mutex_lock(&fork->mutex);
-		gettimeofday(&current_time, NULL);
-		fork->fork[philo.id] = 1;
-		printf("%ld %d has taken a fork\n", current_time.tv_sec * 1000 + current_time.tv_usec / 1000  - philo.birth ,philo.id);
+		pthread_mutex_lock(&fork->mutex[philo.id]);
+		if(philo.id == philo.total_philo - 1)
+			pthread_mutex_lock(&fork->mutex[0]);
+		else
+			pthread_mutex_lock(&fork->mutex[philo.id + 1]);
+		fork->fork[philo.id] = 1;;
+		print_stamp("has taken a fork", philo);
 		if (philo.id < philo.total_philo - 1 || philo.total_philo > 1)
 		{
-			if (philo.total_philo > 1)
-				fork->fork[philo.id + 1] = 1;
-			else
-				fork->fork[0] = 1;
-			gettimeofday(&current_time, NULL);
-			printf("%ld %d has taken a fork\n", current_time.tv_sec * 1000 + current_time.tv_usec / 1000  - philo.birth ,philo.id);
-			gettimeofday(&current_time, NULL);
-			printf("%ld %d is eating\n", current_time.tv_sec * 1000 + current_time.tv_usec / 1000  - philo.birth ,philo.id);
+			// if (philo.total_philo > 1)
+			// 	fork->fork[philo.id + 1] = 1;
+			// else
+			// 	fork->fork[0] = 1;
+			print_stamp("has taken a fork", philo);
+			print_stamp("is eating", philo);
+			philo.number_eats ++;
 		}
 		usleep(philo.time_to_eat * 1000);
-		// fork->fork[philo.id] = 0;
+		fork->fork[philo.id] = 0;
 		// if (philo.id < philo.total_philo - 1 || philo.total_philo > 1)
 		// {
 		// 	if (philo.total_philo > 1)
@@ -72,12 +73,14 @@ void* routine(void *philo_fork)
 		// 	else
 		// 		fork->fork[0] = 0;
 		// }
-		pthread_mutex_unlock(&fork->mutex);
-		gettimeofday(&current_time, NULL);
-		printf("%ld %d is sleping\n", current_time.tv_sec * 1000 + current_time.tv_usec / 1000  - philo.birth ,philo.id);
+		pthread_mutex_unlock(&fork->mutex[philo.id]);
+		if(philo.id == philo.total_philo - 1)
+			pthread_mutex_unlock(&fork->mutex[0]);
+		else
+			pthread_mutex_unlock(&fork->mutex[philo.id + 1]);
+		print_stamp("is sleeping", philo);
 		usleep(philo.time_to_sleep * 1000);
-		gettimeofday(&current_time, NULL);
-		printf("%ld %d is thinking\n", current_time.tv_sec * 1000 + current_time.tv_usec / 1000  - philo.birth ,philo.id);
+		print_stamp("is thinking", philo);
 	}
 	return(NULL);
 }
@@ -85,7 +88,6 @@ void* routine(void *philo_fork)
 t_philo *ft_philocreate(int argc, char **argv)
 {
 	t_philo	*philo;
-	struct timeval current_time;
 	int		i;
 	int		p;
 
@@ -94,11 +96,10 @@ t_philo *ft_philocreate(int argc, char **argv)
 	philo = malloc(sizeof(t_philo) * p);
 	if (!philo)
 		return (NULL);
-	gettimeofday(&current_time, NULL);
 	while(i < p)
 	{
 		philo[i].id = i;
-		philo[i].birth = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
+		philo[i].birth = my_gettime_ms();
 		philo[i].time_to_die = ft_atoi(argv[2]);	
 		philo[i].time_to_eat = ft_atoi(argv[3]);
 		philo[i].time_to_sleep = ft_atoi(argv[4]);
@@ -110,7 +111,6 @@ t_philo *ft_philocreate(int argc, char **argv)
 		philo[i].last_eat = 0;
 		philo[i].total_philo = ft_atoi(argv[1]);
 		i++;
-
 	}
 	return(philo);
 }
@@ -127,12 +127,15 @@ t_fork	*ft_fork(int f)
 	fork->fork = malloc(sizeof(int) * f);
 	if (fork->fork == NULL)
 		return (NULL);
+	fork->mutex = malloc(sizeof(pthread_mutex_t) * f);
+	if (fork->mutex == NULL)
+		return (NULL);
 	while (i < f)
 	{
 		fork->fork[i] = 0;
+		pthread_mutex_init(&fork->mutex[i], NULL);
 		i++;
 	}
-	pthread_mutex_init(&fork->mutex, NULL);
 	return(fork);
 }
 

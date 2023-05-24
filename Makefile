@@ -1,4 +1,5 @@
-SRCS	= main.c
+SRCS	= main.c \
+			philo_utils.c
 
 OBJS 	= ${SRCS:.c=.o}
 

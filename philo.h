@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/23 15:22:07 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/05/24 16:03:49 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,16 @@ typedef struct s_philo {
 
 typedef struct s_fork {
 	int *fork;
-	pthread_mutex_t mutex;
+	pthread_mutex_t *mutex;
 }				t_fork;
 
 typedef struct s_philofork {
 	t_philo	philo;
 	t_fork	*fork;
 }				t_philofork;
+
+void ft_my_usleep(int time);
+void print_stamp(char *mess, t_philo philo);
+long my_gettime_ms();
 
 #endif
