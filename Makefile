@@ -1,5 +1,7 @@
 SRCS	= main.c \
-			philo_utils.c
+			philo_utils.c \
+			routine.c \
+			philo_fork_creation.c 
 
 OBJS 	= ${SRCS:.c=.o}
 

@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Philo_utils.c                                       :+:      :+:    :+:   */
+/*   philo_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/24 15:13:39 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/05/31 15:43:54 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
 
 int	ft_atoi(const char *str)
 {
@@ -37,7 +36,7 @@ int	ft_atoi(const char *str)
 	return (sign * result);
 }
 
-void ft_my_usleep(int time)
+void	ft_my_usleep(int time)
 {
 	int	i;
 
@@ -49,37 +48,36 @@ void ft_my_usleep(int time)
 	}
 }
 
-void print_stamp(char *mess, t_philo philo)
+void	print_stamp(char *mess, t_philo philo)
 {
 	long	time;
 
 	time = my_gettime_ms();
-	printf("%ld %d %s\n",  time - philo.birth ,philo.id, mess);
+	printf("%ld %d %s\n", time - philo.birth, philo.id, mess);
 }
 
-long my_gettime_ms()
+long	my_gettime_ms(void)
 {
-	long	time;
-	struct	timeval current_time;
+	long			time;
+	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
 	time = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
-	return(time);
+	return (time);
 }
 
-int ft_getmineats(t_philo *philo)
+int	ft_getmineats(t_philo *philo)
 {
 	int	i;
 	int	min;
 
 	i = 0;
 	min = philo[0].number_eats;
-	while(i < philo[0].total_philo)
+	while (i < philo[0].total_philo)
 	{
-		if(philo[i].number_eats < min)
+		if (philo[i].number_eats < min)
 			min = philo[i].number_eats;
 		i++;
 	}
 	return (min);
 }
-
