@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 09:46:28 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 10:59:58 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 11:54:31 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,21 @@ int	ft_check_digit(int argc, char **argv)
 	int	i;
 	int	j;
 
-	j = argc;
-	while (j > 1)
+	j = 1;
+	while (j < argc)
 	{
 		i = 0;
-		while (argv[j - 1][i] != '\0')
+		while (argv[j][i] != '\0')
 		{
-			if (argv[j - 1][i] < '0' || argv[j - 1][i] > '9')
+			if (argv[j][i] < '0' || argv[j][i] > '9')
 			{
-				printf("Argument %d cotains other", j - 1);
-				printf("than int or negative numbers\n");
+				printf("Argument %d cotains other ", j);
+				printf("than digit or negative numbers\n");
 				return (0);
 			}
 			i++;
 		}
-		j--;
+		j++;
 	}
 	return (1);
 }
@@ -42,26 +42,21 @@ int	ft_check_int(int argc, char **argv)
 	char	*s;
 	int		j;
 
-	j = argc;
+	j = 1;
 	s = "2147483647";
-	while (j > 1)
+	while (j < argc)
 	{
-		if (ft_strlen(argv[j - 1]) > 10)
-		{
-			printf("Argument %d does not fit into an int\n", j - 1);
-			return (0);
-		}
 		i = 0;
-		while (argv[j - 1][i] != '\0' && ft_strlen(argv[j - 1]) == 10)
+		while (argv[j][i] != '\0' && ft_strlen(argv[j]) >= 10)
 		{
-			if(argv[j - 1][i] > s[i])
+			if (argv[j][i] > s[i] || ft_strlen(argv[j]) > 10)
 			{
-				printf("Argument %d does not fit into an int\n", j - 1);
+				printf("Argument %d does not fit into an int\n", j);
 				return (0);
 			}
 			i++;
 		}
-		j--;
+		j++;
 	}
 	return (1);
 }
