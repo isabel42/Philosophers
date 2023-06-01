@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/31 15:44:25 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 10:59:58 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct s_philofork {
 
 // philo_utils.c
 int			ft_atoi(const char *str);
-void		ft_my_usleep(int time);
+int			ft_strlen(char *s);
 void		print_stamp(char *mess, t_philo philo);
 long		my_gettime_ms(void);
 int			ft_getmineats(t_philo *philo);
@@ -69,5 +69,16 @@ void		*routine(void *philo_fork);
 t_philo		*ft_philocreate(int argc, char **argv);
 t_fork		*ft_fork(int f);
 t_action	*ft_action_create(void);
+int			ft_thread(t_philo *philo, t_fork *fork,
+				pthread_t *thread, t_philofork	**philo_fork);
+
+// free.c
+void		ft_free_all(t_philo *philo, t_fork *fork,
+				pthread_t *thread, t_philofork **philo_fork);
+
+// arg_check.c
+int			ft_check_digit(int argc, char **argv);
+int			ft_check_int(int argc, char **argv);
+int			ft_check_arg(int argc, char **argv);
 
 #endif

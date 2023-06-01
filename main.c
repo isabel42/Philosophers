@@ -6,95 +6,91 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/31 16:28:16 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 10:39:20 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_thread(t_philo *philo, t_fork *fork,
-	pthread_t *thread, t_philofork	**philo_fork)
+void	ft_stamp(t_philo *philo)
 {
-	int			i;
+	int	i;
+	int	j;
 
 	i = 0;
 	while (i < philo[0].total_philo)
 	{
-		philo_fork[i] = malloc(sizeof(t_philofork));
-		if (philo_fork == NULL)
-			return (0);
-		philo_fork[i]->fork = fork;
-		philo_fork[i]->philo = &philo[i];
-		pthread_create(&thread[i], NULL, &routine, philo_fork[i]);
+		j = 0;
+		while (j < 5)
+		{
+			if (philo[i].actions[j].active == 1
+				&& philo[i].actions[j].written == 0)
+			{
+				philo[i].actions[j].written = 1;
+				print_stamp(philo[i].actions[j].txt, philo[i]);
+			}
+			j++;
+		}
 		i++;
 	}
-	return (1);
 }
 
-void	ft_check_exit(t_philo *philo, pthread_t *thread)
+int	ft_check_meals(t_philo *philo, pthread_t *thread)
 {
-	int		a;
-	long	time_death;
-	int		i;
-	int		j;
+	int	i;
 
-	while (42)
+	if (ft_getmineats(philo) == philo[0].target_eats)
 	{
 		i = 0;
 		while (i < philo[0].total_philo)
 		{
-			j = 0;
-			while (j < 5)
-			{
-				if (philo[i].actions[j].active == 1
-					&& philo[i].actions[j].written == 0)
-				{
-					philo[i].actions[j].written = 1;
-					print_stamp(philo[i].actions[j].txt, philo[i]);
-				}
-				j++;
-			}
+			pthread_detach(thread[i]);
 			i++;
 		}
-		if (ft_getmineats(philo) == philo[0].target_eats)
-		{
-			i = 0;
-			while (i < philo[0].total_philo)
-			{
-				pthread_detach(thread[i]);
-				i++;
-			}
-			printf("\nAll philosophers have eaten at least %d times\n",
-				philo[0].target_eats);
-			break ;
-		}
-		i = 0;
-		while (i < philo[0].total_philo)
-		{
-			if (my_gettime_ms() - philo[i].last_eat
-				- philo[i].birth > philo[i].time_to_die)
-			{
-				a = i;
-				time_death = my_gettime_ms() - philo[i].birth;
-				break ;
-			}
-			i++;
-		}
-		if (i < philo[0].total_philo)
-		{
-			i = 0;
-			while (i < philo[0].total_philo)
-			{
-				pthread_detach(thread[i]);
-				i++;
-			}
-			printf("\n");
-			printf("%ld %d has died\n", time_death, a);
-			break ;
-		}
+		printf("\nAll philosophers have eaten at least %d times\n",
+			philo[0].target_eats);
+		return (1);
 	}
+	return (0);
 }
 
+int	ft_check_death(t_philo *philo, pthread_t *thread)
+{
+	int		i;
+	long	time_death;
+
+	i = 0;
+	while (i < philo[0].total_philo)
+	{
+		if (my_gettime_ms() - philo[i].last_eat
+			- philo[i].birth > philo[i].time_to_die)
+		{
+			time_death = my_gettime_ms() - philo[i].birth;
+			printf("\n%ld %d has died\n", time_death, i);
+			i = 0;
+			while (i < philo[0].total_philo)
+			{
+				pthread_detach(thread[i]);
+				i++;
+			}
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+void	ft_check_exit(t_philo *philo, pthread_t *thread)
+{
+	while (42)
+	{
+		ft_stamp(philo);
+		if (ft_check_meals(philo, thread) == 1)
+			break ;
+		if (ft_check_death(philo, thread) == 1)
+			break ;
+	}
+}
 
 int	main(int argc, char **argv)
 {
@@ -103,6 +99,8 @@ int	main(int argc, char **argv)
 	pthread_t	*thread;
 	t_philofork	**philo_fork;
 
+	if (ft_check_arg(argc, argv) == 0)
+		return (0);
 	fork = ft_fork(ft_atoi(argv[1]));
 	if (fork == NULL || fork->fork == NULL || fork->mutex == NULL)
 		return (0);
@@ -118,5 +116,7 @@ int	main(int argc, char **argv)
 	if (ft_thread(philo, fork, thread, philo_fork) == 0)
 		return (0);
 	ft_check_exit(philo, thread);
+	pthread_mutex_destroy(fork->mutex);
+	ft_free_all(philo, fork, thread, philo_fork);
 	return (0);
 }

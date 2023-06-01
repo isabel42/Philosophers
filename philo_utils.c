@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/31 15:43:54 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 10:59:58 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,14 @@ int	ft_atoi(const char *str)
 	return (sign * result);
 }
 
-void	ft_my_usleep(int time)
+int	ft_strlen(char *s)
 {
 	int	i;
 
 	i = 0;
-	while (i < time)
-	{
-		usleep(1);
+	while (s[i] != '\0')
 		i++;
-	}
+	return (i);
 }
 
 void	print_stamp(char *mess, t_philo philo)

@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/31 15:51:18 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/05/31 17:46:48 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,4 +85,23 @@ t_action	*ft_action_create(void)
 	actions[3].txt = "is sleeping";
 	actions[4].txt = "is thiking";
 	return (actions);
+}
+
+int	ft_thread(t_philo *philo, t_fork *fork,
+	pthread_t *thread, t_philofork	**philo_fork)
+{
+	int			i;
+
+	i = 0;
+	while (i < philo[0].total_philo)
+	{
+		philo_fork[i] = malloc(sizeof(t_philofork));
+		if (philo_fork == NULL)
+			return (0);
+		philo_fork[i]->fork = fork;
+		philo_fork[i]->philo = &philo[i];
+		pthread_create(&thread[i], NULL, &routine, philo_fork[i]);
+		i++;
+	}
+	return (1);
 }
