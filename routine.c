@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/31 15:28:28 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 16:38:25 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,18 @@ void	ft_action_reset(t_philo *philo)
 
 void	ft_eat(t_philo *philo)
 {
+	long	time;
+
+	time = my_gettime_ms();
 	if (philo->id < philo->total_philo - 1 || philo->total_philo > 1)
 	{
 		philo->actions[1].active = 1;
-		philo->last_eat = my_gettime_ms() + philo->time_to_eat - philo->birth;
+		philo->last_eat = my_gettime_ms() - philo->birth;
 		philo->number_eats++;
 	}
 	philo->actions[2].active = 1;
-	usleep(philo->time_to_eat * 1000);
+	while (philo->time_to_eat + time > my_gettime_ms())
+		usleep(500);
 }
 
 void	ft_lock_mutex(t_fork *fork, t_philo *philo)
@@ -62,6 +66,7 @@ void	*routine(void *philo_fork)
 	t_fork		*fork;
 	t_philo		*philo;
 	t_philofork	*philo_fork_new;
+	long		time;
 
 	philo_fork_new = (t_philofork *) philo_fork;
 	philo = philo_fork_new->philo;
@@ -72,7 +77,9 @@ void	*routine(void *philo_fork)
 		ft_eat(philo);
 		ft_unlock_mutex(fork, philo);
 		philo->actions[3].active = 1;
-		usleep(philo->time_to_sleep * 1000);
+		time = my_gettime_ms();
+		while (philo->time_to_sleep + time > my_gettime_ms())
+			usleep(500);
 		philo->actions[4].active = 1;
 	}
 	return (NULL);

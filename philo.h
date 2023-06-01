@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 10:59:58 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 16:15:22 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct s_philo {
 	long		death;
 	long		time_to_die;	
 	long		time_to_eat;
-	int			time_to_sleep;
+	long		time_to_sleep;
 	int			target_eats;
 	long		last_eat;
 	int			number_eats;
@@ -57,6 +57,7 @@ int			ft_strlen(char *s);
 void		print_stamp(char *mess, t_philo philo);
 long		my_gettime_ms(void);
 int			ft_getmineats(t_philo *philo);
+void		ft_my_usleep(long time, long current_time);
 
 // routine.c
 void		ft_action_reset(t_philo *philo);
