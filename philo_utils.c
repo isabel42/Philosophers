@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 16:38:13 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 16:51:31 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	print_stamp(char *mess, t_philo philo)
 	long	time;
 
 	time = my_gettime_ms();
-	printf("%ld %d %s\n", time - philo.birth, philo.id, mess);
+	printf("%ld ms: Philo %d %s\n", time - philo.birth, philo.id, mess);
 }
 
 long	my_gettime_ms(void)
