@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 16:50:00 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/01 17:27:17 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,10 @@ void	ft_eat(t_philo *philo)
 
 void	ft_lock_mutex(t_fork *fork, t_philo *philo)
 {
-	ft_action_reset(philo);
 	pthread_mutex_lock(&fork->mutex[philo->id]);
+	ft_action_reset(philo);
+	if (philo->total_philo == 1)
+		philo->actions[0].active = 1;
 	if (philo->id == philo->total_philo - 1)
 		pthread_mutex_lock(&fork->mutex[0]);
 	else
