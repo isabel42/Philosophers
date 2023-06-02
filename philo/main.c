@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 11:43:52 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 14:37:39 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ int	main(int argc, char **argv)
 	if (ft_thread(philo, mutex, thread, philo_fork) == 0)
 		return (0);
 	ft_check_exit(philo, thread);
-	pthread_mutex_destroy(mutex);
 	ft_free_all(philo, mutex, thread, philo_fork);
 	return (0);
 }
