@@ -6,19 +6,20 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 17:35:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 14:37:39 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 15:37:10 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_free_all(t_philo *philo, pthread_mutex_t *mutex,
-			pthread_t *thread, t_philofork **philo_fork)
+void	ft_free_all(t_philo *philo, t_mulmutex *mutex,
+			pthread_t *thread, t_philomutex **philo_fork)
 {
 	int	i;
 
 	i = 0;
-	pthread_mutex_destroy(mutex);
+	pthread_mutex_destroy(mutex->mutex_fork);
+	pthread_mutex_destroy(&mutex->mutex_write);
 	free(mutex);
 	free(thread);
 	while (i < philo[0].total_philo)

@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 12:31:24 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 16:44:36 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,78 +25,96 @@ void	ft_action_reset(t_philo *philo)
 	}
 }
 
-void	ft_eat(t_philo *philo)
+void	ft_write(int i, t_philo *philo, pthread_mutex_t mutex_write)
+{
+	if (pthread_mutex_lock(&mutex_write) != 0)
+		return ;
+	print_stamp(philo->actions[i].txt, *philo);
+	if (pthread_mutex_unlock(&mutex_write) != 0)
+		return ;
+
+}
+
+void	ft_eat(t_philo *philo, pthread_mutex_t mutex_write)
 {
 	long	time;
 
 	time = my_gettime_ms();
 	if (philo->id < philo->total_philo - 1 || philo->total_philo > 1)
 	{
-		philo->actions[1].active = 1;
+		//philo->actions[1].active = 1;
+		ft_write(1, philo, mutex_write);
 		philo->last_eat = time - philo->birth;
 		philo->number_eats++;
 	}
-	philo->actions[2].active = 1;
+	//philo->actions[2].active = 1;
+	ft_write(2, philo, mutex_write);
 	while (philo->time_to_eat + time > my_gettime_ms())
 		usleep(500);
 }
 
-void	ft_lock_mutex(pthread_mutex_t *mutex, t_philo *philo)
+void	ft_lock_mutex(t_mulmutex *mul_mutex, t_philo *philo)
 {
-	if (pthread_mutex_lock(&mutex[philo->id]) != 0)
+	if (pthread_mutex_lock(&mul_mutex->mutex_fork[philo->id]) != 0)
 		return ;
-	ft_action_reset(philo);
+	//ft_action_reset(philo);
 	if (philo->total_philo == 1)
-		philo->actions[0].active = 1;
+	{
+		//philo->actions[0].active = 1;
+		ft_write(0, philo, mul_mutex->mutex_write);
+	}
 	if (philo->id == philo->total_philo - 1)
 		{
-			if (pthread_mutex_lock(&mutex[0]) != 0)
+			if (pthread_mutex_lock(&mul_mutex->mutex_fork[0]) != 0)
 				return ;
 		}
 	else
 	{
-		if (pthread_mutex_lock(&mutex[philo->id + 1]) != 0)
+		if (pthread_mutex_lock(&mul_mutex->mutex_fork[philo->id + 1]) != 0)
 			return ;
 	}	
-	philo->actions[0].active = 1;
+	//philo->actions[0].active = 1;
+	ft_write(0, philo, mul_mutex->mutex_write);
 }
 
-void	ft_unlock_mutex(pthread_mutex_t *mutex, t_philo *philo)
+void	ft_unlock_mutex(t_mulmutex *mul_mutex, t_philo *philo)
 {
-	if (pthread_mutex_unlock(&mutex[philo->id]) != 0)
+	if (pthread_mutex_unlock(&mul_mutex->mutex_fork[philo->id]) != 0)
 		return ;
 	if (philo->id == philo->total_philo - 1)
 	{
-		if (pthread_mutex_unlock(&mutex[0]) != 0)
+		if (pthread_mutex_unlock(&mul_mutex->mutex_fork[0]) != 0)
 			return ;
 	}
 	else
 	{
-		if (pthread_mutex_unlock(&mutex[philo->id + 1]) != 0)
+		if (pthread_mutex_unlock(&mul_mutex->mutex_fork[philo->id + 1]) != 0)
 			return ;
 	}	
 }
 
-void	*routine(void *philo_fork)
+void	*routine(void *philo_mutex)
 {
-	pthread_mutex_t	*mutex;
+	t_mulmutex		*mul_mutex;
 	t_philo			*philo;
-	t_philofork		*philo_fork_new;
+	t_philomutex	*philo_mutex_new;
 	long			time;
 
-	philo_fork_new = (t_philofork *) philo_fork;
-	philo = philo_fork_new->philo;
-	mutex = philo_fork_new->mutex;
+	philo_mutex_new = (t_philomutex *) philo_mutex;
+	philo = philo_mutex_new->philo;
+	mul_mutex = philo_mutex_new->mul_mutex;
 	while (42)
 	{
-		ft_lock_mutex(mutex, philo);
-		ft_eat(philo);
-		ft_unlock_mutex(mutex, philo);
-		philo->actions[3].active = 1;
+		ft_lock_mutex(mul_mutex, philo);
+		ft_eat(philo, mul_mutex->mutex_write);
+		ft_unlock_mutex(mul_mutex, philo);
+		//philo->actions[3].active = 1;
+		ft_write(3, philo, mul_mutex->mutex_write);
 		time = my_gettime_ms();
 		while (philo->time_to_sleep + time > my_gettime_ms())
 			usleep(500);
-		philo->actions[4].active = 1;
+		//philo->actions[4].active = 1;
+		ft_write(4, philo, mul_mutex->mutex_write);
 	}
 	return (NULL);
 }

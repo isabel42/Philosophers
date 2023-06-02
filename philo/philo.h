@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 11:53:45 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 16:45:07 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,16 @@ typedef struct s_philo {
 	int			total_philo;
 }				t_philo;
 
-typedef struct s_philofork {
+typedef struct s_mulmutex {
+	pthread_mutex_t *mutex_fork;
+	pthread_mutex_t mutex_write;
+	pthread_mutex_t mutex_death;
+}				t_mulmutex;
+
+typedef struct s_philomutex {
 	t_philo			*philo;
-	pthread_mutex_t	*mutex;
-}				t_philofork;
+	t_mulmutex		*mul_mutex;
+}				t_philomutex;
 
 // philo_utils.c
 int					ft_atoi(const char *str);
@@ -55,21 +61,21 @@ int					ft_getmineats(t_philo *philo);
 
 // routine.c
 void				ft_action_reset(t_philo *philo);
-void				ft_eat(t_philo *philo);
-void				ft_lock_mutex(pthread_mutex_t *mutex, t_philo *philo);
-void				ft_unlock_mutex(pthread_mutex_t *mutex, t_philo *philo);
+void				ft_eat(t_philo *philo, pthread_mutex_t mutex_write);
+void				ft_lock_mutex(t_mulmutex *mutex, t_philo *philo);
+void				ft_unlock_mutex(t_mulmutex *mutex, t_philo *philo);
 void				*routine(void *philo_fork);
 
 // philo_fork_creation.c 
 t_philo				*ft_philocreate(int argc, char **argv);
-pthread_mutex_t		*ft_mutex(int f);
+t_mulmutex			*ft_mutex(int f);
 t_action			*ft_action_create(void);
-int					ft_thread(t_philo *philo, pthread_mutex_t *mutex,
-						pthread_t *thread, t_philofork	**philo_fork);
+int					ft_thread(t_philo *philo, t_mulmutex *mul_mutex,
+						pthread_t *thread, t_philomutex	**philo_mutex);
 
 // free.c
-void				ft_free_all(t_philo *philo, pthread_mutex_t *mutex,
-						pthread_t *thread, t_philofork **philo_fork);
+void				ft_free_all(t_philo *philo, t_mulmutex *mutex,
+						pthread_t *thread, t_philomutex **philo_fork);
 
 // arg_check.c
 int					ft_check_digit(int argc, char **argv);

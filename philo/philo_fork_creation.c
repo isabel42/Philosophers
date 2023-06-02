@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 12:30:16 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 16:38:32 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,26 @@ t_philo	*ft_philocreate(int argc, char **argv)
 	return (philo);
 }
 
-pthread_mutex_t	*ft_mutex(int f)
+t_mulmutex	*ft_mutex(int f)
 {
-	pthread_mutex_t	*mutex;
+	t_mulmutex	*mul_mutex;
 	int				i;
 
 	i = 0;
-	mutex = malloc(sizeof(pthread_mutex_t) * f);
-	if (mutex == NULL)
+	mul_mutex = malloc(sizeof(t_mulmutex));
+	if (mul_mutex == NULL)
+		return (NULL);
+	mul_mutex->mutex_fork = malloc(sizeof(pthread_mutex_t) * f);
+	if (mul_mutex->mutex_fork == NULL)
 		return (NULL);
 	while (i < f)
 	{
-		pthread_mutex_init(&mutex[i], NULL);
+		pthread_mutex_init(&mul_mutex->mutex_fork[i], NULL);
 		i++;
 	}
-	return (mutex);
+	pthread_mutex_init(&mul_mutex->mutex_write, NULL);
+	pthread_mutex_init(&mul_mutex->mutex_death, NULL);
+	return (mul_mutex);
 }
 
 t_action	*ft_action_create(void)
@@ -62,11 +67,11 @@ t_action	*ft_action_create(void)
 	t_action	*actions;
 	int			i;
 
-	actions = malloc(sizeof(t_action) * 5);
+	actions = malloc(sizeof(t_action) * 6);
 	if (!actions)
 		return (NULL);
 	i = 0;
-	while (i < 5)
+	while (i < 6)
 	{
 		actions[i].active = 0;
 		actions[i].written = 0;
@@ -77,23 +82,24 @@ t_action	*ft_action_create(void)
 	actions[2].txt = "is eating";
 	actions[3].txt = "is sleeping";
 	actions[4].txt = "is thiking";
+	actions[5].txt = "is dead";
 	return (actions);
 }
 
-int	ft_thread(t_philo *philo, pthread_mutex_t *mutex,
-	pthread_t *thread, t_philofork	**philo_fork)
+int	ft_thread(t_philo *philo, t_mulmutex *mul_mutex,
+	pthread_t *thread, t_philomutex	**philo_mutex)
 {
 	int			i;
 
 	i = 0;
 	while (i < philo[0].total_philo)
 	{
-		philo_fork[i] = malloc(sizeof(t_philofork));
-		if (philo_fork == NULL)
+		philo_mutex[i] = malloc(sizeof(t_philomutex));
+		if (philo_mutex == NULL)
 			return (0);
-		philo_fork[i]->mutex = mutex;
-		philo_fork[i]->philo = &philo[i];
-		if (pthread_create(&thread[i], NULL, &routine, philo_fork[i]) != 0)
+		philo_mutex[i]->mul_mutex = mul_mutex;
+		philo_mutex[i]->philo = &philo[i];
+		if (pthread_create(&thread[i], NULL, &routine, philo_mutex[i]) != 0)
 			return (0);
 		i++;
 	}
