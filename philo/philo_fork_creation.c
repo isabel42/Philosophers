@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 11:54:21 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 12:30:16 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,8 @@ int	ft_thread(t_philo *philo, pthread_mutex_t *mutex,
 			return (0);
 		philo_fork[i]->mutex = mutex;
 		philo_fork[i]->philo = &philo[i];
-		pthread_create(&thread[i], NULL, &routine, philo_fork[i]);
+		if (pthread_create(&thread[i], NULL, &routine, philo_fork[i]) != 0)
+			return (0);
 		i++;
 	}
 	return (1);

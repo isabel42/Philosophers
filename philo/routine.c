@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 10:00:33 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 12:31:24 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,24 +43,38 @@ void	ft_eat(t_philo *philo)
 
 void	ft_lock_mutex(pthread_mutex_t *mutex, t_philo *philo)
 {
-	pthread_mutex_lock(&mutex[philo->id]);
+	if (pthread_mutex_lock(&mutex[philo->id]) != 0)
+		return ;
 	ft_action_reset(philo);
 	if (philo->total_philo == 1)
 		philo->actions[0].active = 1;
 	if (philo->id == philo->total_philo - 1)
-		pthread_mutex_lock(&mutex[0]);
+		{
+			if (pthread_mutex_lock(&mutex[0]) != 0)
+				return ;
+		}
 	else
-		pthread_mutex_lock(&mutex[philo->id + 1]);
+	{
+		if (pthread_mutex_lock(&mutex[philo->id + 1]) != 0)
+			return ;
+	}	
 	philo->actions[0].active = 1;
 }
 
 void	ft_unlock_mutex(pthread_mutex_t *mutex, t_philo *philo)
 {
-	pthread_mutex_unlock(&mutex[philo->id]);
+	if (pthread_mutex_unlock(&mutex[philo->id]) != 0)
+		return ;
 	if (philo->id == philo->total_philo - 1)
-		pthread_mutex_unlock(&mutex[0]);
+	{
+		if (pthread_mutex_unlock(&mutex[0]) != 0)
+			return ;
+	}
 	else
-		pthread_mutex_unlock(&mutex[philo->id + 1]);
+	{
+		if (pthread_mutex_unlock(&mutex[philo->id + 1]) != 0)
+			return ;
+	}	
 }
 
 void	*routine(void *philo_fork)
