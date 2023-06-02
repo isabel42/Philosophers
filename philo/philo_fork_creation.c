@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/05/31 17:46:48 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 09:59:34 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,28 +40,21 @@ t_philo	*ft_philocreate(int argc, char **argv)
 	return (philo);
 }
 
-t_fork	*ft_fork(int f)
+pthread_mutex_t	*ft_mutex(int f)
 {
-	t_fork	*fork;
+	pthread_mutex_t	*mutex;
 	int		i;
 
 	i = 0;
-	fork = malloc(sizeof(t_fork));
-	if (fork == NULL)
-		return (NULL);
-	fork->fork = malloc(sizeof(int) * f);
-	if (fork->fork == NULL)
-		return (NULL);
-	fork->mutex = malloc(sizeof(pthread_mutex_t) * f);
-	if (fork->mutex == NULL)
+	mutex = malloc(sizeof(pthread_mutex_t) * f);
+	if (mutex == NULL)
 		return (NULL);
 	while (i < f)
 	{
-		fork->fork[i] = 0;
-		pthread_mutex_init(&fork->mutex[i], NULL);
+		pthread_mutex_init(&mutex[i], NULL);
 		i++;
 	}
-	return (fork);
+	return (mutex);
 }
 
 t_action	*ft_action_create(void)
@@ -87,7 +80,7 @@ t_action	*ft_action_create(void)
 	return (actions);
 }
 
-int	ft_thread(t_philo *philo, t_fork *fork,
+int	ft_thread(t_philo *philo, pthread_mutex_t *mutex,
 	pthread_t *thread, t_philofork	**philo_fork)
 {
 	int			i;
@@ -98,7 +91,7 @@ int	ft_thread(t_philo *philo, t_fork *fork,
 		philo_fork[i] = malloc(sizeof(t_philofork));
 		if (philo_fork == NULL)
 			return (0);
-		philo_fork[i]->fork = fork;
+		philo_fork[i]->mutex = mutex;
 		philo_fork[i]->philo = &philo[i];
 		pthread_create(&thread[i], NULL, &routine, philo_fork[i]);
 		i++;

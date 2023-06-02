@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 17:27:17 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 10:00:33 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,43 +41,43 @@ void	ft_eat(t_philo *philo)
 		usleep(500);
 }
 
-void	ft_lock_mutex(t_fork *fork, t_philo *philo)
+void	ft_lock_mutex(pthread_mutex_t *mutex, t_philo *philo)
 {
-	pthread_mutex_lock(&fork->mutex[philo->id]);
+	pthread_mutex_lock(&mutex[philo->id]);
 	ft_action_reset(philo);
 	if (philo->total_philo == 1)
 		philo->actions[0].active = 1;
 	if (philo->id == philo->total_philo - 1)
-		pthread_mutex_lock(&fork->mutex[0]);
+		pthread_mutex_lock(&mutex[0]);
 	else
-		pthread_mutex_lock(&fork->mutex[philo->id + 1]);
+		pthread_mutex_lock(&mutex[philo->id + 1]);
 	philo->actions[0].active = 1;
 }
 
-void	ft_unlock_mutex(t_fork *fork, t_philo *philo)
+void	ft_unlock_mutex(pthread_mutex_t *mutex, t_philo *philo)
 {
-	pthread_mutex_unlock(&fork->mutex[philo->id]);
+	pthread_mutex_unlock(&mutex[philo->id]);
 	if (philo->id == philo->total_philo - 1)
-		pthread_mutex_unlock(&fork->mutex[0]);
+		pthread_mutex_unlock(&mutex[0]);
 	else
-		pthread_mutex_unlock(&fork->mutex[philo->id + 1]);
+		pthread_mutex_unlock(&mutex[philo->id + 1]);
 }
 
 void	*routine(void *philo_fork)
 {
-	t_fork		*fork;
-	t_philo		*philo;
-	t_philofork	*philo_fork_new;
-	long		time;
+	pthread_mutex_t	*mutex;
+	t_philo			*philo;
+	t_philofork		*philo_fork_new;
+	long			time;
 
 	philo_fork_new = (t_philofork *) philo_fork;
 	philo = philo_fork_new->philo;
-	fork = philo_fork_new->fork;
+	mutex = philo_fork_new->mutex;
 	while (42)
 	{
-		ft_lock_mutex(fork, philo);
+		ft_lock_mutex(mutex, philo);
 		ft_eat(philo);
-		ft_unlock_mutex(fork, philo);
+		ft_unlock_mutex(mutex, philo);
 		philo->actions[3].active = 1;
 		time = my_gettime_ms();
 		while (philo->time_to_sleep + time > my_gettime_ms())

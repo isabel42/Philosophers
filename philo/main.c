@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 10:39:20 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 10:54:17 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,15 +94,15 @@ void	ft_check_exit(t_philo *philo, pthread_t *thread)
 
 int	main(int argc, char **argv)
 {
-	t_philo		*philo;
-	t_fork		*fork;
-	pthread_t	*thread;
-	t_philofork	**philo_fork;
+	t_philo			*philo;
+	pthread_mutex_t	*mutex;
+	pthread_t		*thread;
+	t_philofork		**philo_fork;
 
 	if (ft_check_arg(argc, argv) == 0)
 		return (0);
-	fork = ft_fork(ft_atoi(argv[1]));
-	if (fork == NULL || fork->fork == NULL || fork->mutex == NULL)
+	mutex = ft_mutex(ft_atoi(argv[1]));
+	if (mutex == NULL)
 		return (0);
 	philo = ft_philocreate(argc, argv);
 	if (philo == NULL || philo->actions == NULL)
@@ -113,10 +113,10 @@ int	main(int argc, char **argv)
 	philo_fork = malloc(sizeof(*philo_fork) * ft_atoi(argv[1]));
 	if (philo_fork == NULL)
 		return (0);
-	if (ft_thread(philo, fork, thread, philo_fork) == 0)
+	if (ft_thread(philo, mutex, thread, philo_fork) == 0)
 		return (0);
 	ft_check_exit(philo, thread);
-	pthread_mutex_destroy(fork->mutex);
-	ft_free_all(philo, fork, thread, philo_fork);
+	pthread_mutex_destroy(mutex);
+	ft_free_all(philo, mutex, thread, philo_fork);
 	return (0);
 }
