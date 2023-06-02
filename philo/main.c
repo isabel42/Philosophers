@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 10:54:17 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 11:43:52 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	ft_check_death(t_philo *philo, pthread_t *thread)
 	while (i < philo[0].total_philo)
 	{
 		if (my_gettime_ms() - philo[i].last_eat
-			- philo[i].birth > philo[i].time_to_die)
+			- philo[i].birth >= philo[i].time_to_die)
 		{
 			time_death = my_gettime_ms() - philo[i].birth;
 			printf("\n%ld %d has died\n", time_death, i);

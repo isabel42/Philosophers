@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 10:05:00 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 11:53:45 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,9 @@ typedef struct s_philo {
 	int			total_philo;
 }				t_philo;
 
-
 typedef struct s_philofork {
-	t_philo	*philo;
-	pthread_mutex_t *mutex;
+	t_philo			*philo;
+	pthread_mutex_t	*mutex;
 }				t_philofork;
 
 // philo_utils.c

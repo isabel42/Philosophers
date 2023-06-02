@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 09:59:34 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/02 11:54:21 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_philo	*ft_philocreate(int argc, char **argv)
 pthread_mutex_t	*ft_mutex(int f)
 {
 	pthread_mutex_t	*mutex;
-	int		i;
+	int				i;
 
 	i = 0;
 	mutex = malloc(sizeof(pthread_mutex_t) * f);
