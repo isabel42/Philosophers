@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 13:13:23 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 13:47:11 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ void	ft_eat(t_philo *philo, t_mulmutex *mul_mutex)
 	time = my_gettime_ms();
 	if (philo->id < philo->total_philo - 1 || philo->total_philo > 1)
 	{
-		ft_write(1, philo, mul_mutex->mutex_write);
 		ft_eat_death(0, philo, NULL, mul_mutex->mutex_death);
 		ft_eat_total(0, philo, NULL, mul_mutex->mutex_total_eats);
+		ft_write(1, philo, mul_mutex->mutex_write);
 	}
 	ft_write(2, philo, mul_mutex->mutex_write);
 	while (philo->time_to_eat + time > my_gettime_ms())
