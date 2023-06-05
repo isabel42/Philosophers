@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 13:47:11 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 19:42:40 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,13 @@ void	ft_write(int i, t_philo *philo, pthread_mutex_t mutex_write)
 {
 	if (pthread_mutex_lock(&mutex_write) != 0)
 		return ;
-	print_stamp(philo->actions[i].txt, *philo);
+	if (i == 5)
+		printf("\n");
+	if (i >= 0)
+		print_stamp(philo->actions[i].txt, *philo);
+	else
+		printf("\nAll philosophers have eaten at least %d times\n",
+			philo[0].target_eats);
 	if (pthread_mutex_unlock(&mutex_write) != 0)
 		return ;
 }
@@ -28,8 +34,8 @@ void	ft_eat(t_philo *philo, t_mulmutex *mul_mutex)
 	time = my_gettime_ms();
 	if (philo->id < philo->total_philo - 1 || philo->total_philo > 1)
 	{
-		ft_eat_death(0, philo, NULL, mul_mutex->mutex_death);
-		ft_eat_total(0, philo, NULL, mul_mutex->mutex_total_eats);
+		ft_eat_total(philo->id, philo, NULL, mul_mutex->mutex_total_eats);
+		ft_eat_death(philo->id, philo, NULL, mul_mutex->mutex_death);
 		ft_write(1, philo, mul_mutex->mutex_write);
 	}
 	ft_write(2, philo, mul_mutex->mutex_write);
@@ -86,6 +92,10 @@ void	*routine(void *philo_mutex)
 	mul_mutex = philo_mutex_new->mul_mutex;
 	while (42)
 	{
+		if(philo->id % 2)
+			usleep(100);
+		if(philo->id % 4)
+			usleep(100);
 		ft_lock_mutex(mul_mutex, philo);
 		ft_eat(philo, mul_mutex);
 		ft_unlock_mutex(mul_mutex, philo);

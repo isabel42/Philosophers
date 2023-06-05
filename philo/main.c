@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 13:09:00 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 19:36:19 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,15 @@ void	ft_check_exit(t_philo *philo, pthread_t *thread, t_mulmutex *mul_mutex)
 	while (42)
 	{
 		if (ft_eat_total(-1, philo, thread, mul_mutex->mutex_total_eats) == 1)
+		{
+			ft_write(-1, philo, mul_mutex->mutex_write);
 			break ;
+		}
 		if (ft_eat_death(-1, philo, thread, mul_mutex->mutex_death) == 1)
+		{
+			ft_write(5, philo, mul_mutex->mutex_write);
 			break ;
+		}
 	}
 }
 

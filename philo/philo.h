@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 13:12:21 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 19:42:40 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ long				my_gettime_ms(void);
 int					ft_getmineats(t_philo *philo);
 
 // routine.c
+void				ft_write(int i, t_philo *philo, pthread_mutex_t mutex_write);
 void				ft_eat(t_philo *philo, t_mulmutex *mul_mutex);
 void				ft_lock_mutex(t_mulmutex *mutex, t_philo *philo);
 void				ft_unlock_mutex(t_mulmutex *mutex, t_philo *philo);

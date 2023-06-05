@@ -20,7 +20,7 @@ CFLAGS	= -Wextra -Wall -Werror
 			${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 ${NAME}: 	${OBJS}
-			${CC} ${CFLAGS} ${OBJS} -o ${NAME}
+			${CC} ${CFLAGS} ${OBJS} -o ${NAME} -g -fsanitize=address
 
 all:		${NAME}
 
