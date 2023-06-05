@@ -6,34 +6,12 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 16:44:36 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 10:51:24 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_stamp(t_philo *philo)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (i < philo[0].total_philo)
-	{
-		j = 0;
-		while (j < 5)
-		{
-			if (philo[i].actions[j].active == 1
-				&& philo[i].actions[j].written == 0)
-			{
-				philo[i].actions[j].written = 1;
-				print_stamp(philo[i].actions[j].txt, philo[i]);
-			}
-			j++;
-		}
-		i++;
-	}
-}
 
 int	ft_check_meals(t_philo *philo, pthread_t *thread)
 {
@@ -84,7 +62,6 @@ void	ft_check_exit(t_philo *philo, pthread_t *thread)
 {
 	while (42)
 	{
-		// ft_stamp(philo);
 		if (ft_check_meals(philo, thread) == 1)
 			break ;
 		if (ft_check_death(philo, thread) == 1)
