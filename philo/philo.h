@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 20:33:16 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 11:19:08 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ long				my_gettime_ms(void);
 int					ft_getmineats(t_philo *philo);
 
 // routine.c
-void				ft_eat(t_philo *philo, pthread_mutex_t mutex_write);
+void				ft_eat(t_philo *philo, t_mulmutex *mul_mutex);
 void				ft_lock_mutex(t_mulmutex *mutex, t_philo *philo);
 void				ft_unlock_mutex(t_mulmutex *mutex, t_philo *philo);
 void				*routine(void *philo_fork);
@@ -80,5 +80,8 @@ void				ft_free_all(t_philo *philo, t_mulmutex *mutex,
 int					ft_check_digit(int argc, char **argv);
 int					ft_check_int(int argc, char **argv);
 int					ft_check_arg(int argc, char **argv);
+
+int					ft_check_death(t_philo *philo, pthread_t *thread);
+int					ft_eat_death(int i, t_philo *philo, pthread_t *thread, pthread_mutex_t mutex_death);
 
 #endif
