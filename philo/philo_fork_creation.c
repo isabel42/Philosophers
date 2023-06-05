@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/02 16:38:32 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 13:12:37 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_philo	*ft_philocreate(int argc, char **argv)
 t_mulmutex	*ft_mutex(int f)
 {
 	t_mulmutex	*mul_mutex;
-	int				i;
+	int			i;
 
 	i = 0;
 	mul_mutex = malloc(sizeof(t_mulmutex));
@@ -59,6 +59,7 @@ t_mulmutex	*ft_mutex(int f)
 	}
 	pthread_mutex_init(&mul_mutex->mutex_write, NULL);
 	pthread_mutex_init(&mul_mutex->mutex_death, NULL);
+	pthread_mutex_init(&mul_mutex->mutex_total_eats, NULL);
 	return (mul_mutex);
 }
 

@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 11:19:08 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 13:12:21 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,10 @@ typedef struct s_philo {
 }				t_philo;
 
 typedef struct s_mulmutex {
-	pthread_mutex_t *mutex_fork;
-	pthread_mutex_t mutex_write;
-	pthread_mutex_t mutex_death;
+	pthread_mutex_t	*mutex_fork;
+	pthread_mutex_t	mutex_write;
+	pthread_mutex_t	mutex_death;
+	pthread_mutex_t	mutex_total_eats;
 }				t_mulmutex;
 
 typedef struct s_philomutex {
@@ -81,7 +82,12 @@ int					ft_check_digit(int argc, char **argv);
 int					ft_check_int(int argc, char **argv);
 int					ft_check_arg(int argc, char **argv);
 
+//end_check.c
+int					ft_eat_death(int i, t_philo *philo,
+						pthread_t *thread, pthread_mutex_t mutex_death);
+int					ft_eat_total(int i, t_philo *philo,
+						pthread_t *thread, pthread_mutex_t mutex_total_eats);
 int					ft_check_death(t_philo *philo, pthread_t *thread);
-int					ft_eat_death(int i, t_philo *philo, pthread_t *thread, pthread_mutex_t mutex_death);
+int					ft_check_meals(t_philo *philo, pthread_t *thread);
 
 #endif

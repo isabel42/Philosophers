@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 12:34:52 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/05 13:13:23 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void	ft_write(int i, t_philo *philo, pthread_mutex_t mutex_write)
 	print_stamp(philo->actions[i].txt, *philo);
 	if (pthread_mutex_unlock(&mutex_write) != 0)
 		return ;
-
 }
 
 void	ft_eat(t_philo *philo, t_mulmutex *mul_mutex)
@@ -31,7 +30,7 @@ void	ft_eat(t_philo *philo, t_mulmutex *mul_mutex)
 	{
 		ft_write(1, philo, mul_mutex->mutex_write);
 		ft_eat_death(0, philo, NULL, mul_mutex->mutex_death);
-		philo->number_eats++;
+		ft_eat_total(0, philo, NULL, mul_mutex->mutex_total_eats);
 	}
 	ft_write(2, philo, mul_mutex->mutex_write);
 	while (philo->time_to_eat + time > my_gettime_ms())
@@ -47,10 +46,10 @@ void	ft_lock_mutex(t_mulmutex *mul_mutex, t_philo *philo)
 		ft_write(0, philo, mul_mutex->mutex_write);
 	}
 	if (philo->id == philo->total_philo - 1)
-		{
-			if (pthread_mutex_lock(&mul_mutex->mutex_fork[0]) != 0)
-				return ;
-		}
+	{
+		if (pthread_mutex_lock(&mul_mutex->mutex_fork[0]) != 0)
+			return ;
+	}
 	else
 	{
 		if (pthread_mutex_lock(&mul_mutex->mutex_fork[philo->id + 1]) != 0)
