@@ -2,9 +2,9 @@ SRCS	= main.c \
 			philo_utils.c \
 			routine.c \
 			philo_fork_creation.c \
-			free.c \
 			arg_check.c \
-			end_check.c
+			end_check.c \
+			free.c
 
 OBJS 	= ${SRCS:.c=.o}
 
@@ -20,7 +20,7 @@ CFLAGS	= -Wextra -Wall -Werror
 			${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 ${NAME}: 	${OBJS}
-			${CC} ${CFLAGS} ${OBJS} -o ${NAME} -g -fsanitize=address
+			${CC} ${CFLAGS} ${OBJS} -o ${NAME}  -pthread
 
 all:		${NAME}
 

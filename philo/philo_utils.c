@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 16:51:31 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 11:45:31 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,14 @@ long	my_gettime_ms(void)
 	return (time);
 }
 
-int	ft_getmineats(t_philo *philo)
+int	ft_getmineats(t_philo *philo, t_info *info)
 {
 	int	i;
 	int	min;
 
 	i = 0;
 	min = philo[0].number_eats;
-	while (i < philo[0].total_philo)
+	while (i < info->total_philo)
 	{
 		if (philo[i].number_eats < min)
 			min = philo[i].number_eats;

@@ -6,104 +6,107 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 19:42:40 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 16:04:07 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_write(int i, t_philo *philo, pthread_mutex_t mutex_write)
+void	ft_write(int i, t_philo *philo, t_info *info)
 {
-	if (pthread_mutex_lock(&mutex_write) != 0)
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_write) != 0)
 		return ;
-	if (i == 5)
-		printf("\n");
-	if (i >= 0)
-		print_stamp(philo->actions[i].txt, *philo);
-	else
+	if (info->stop == 0 && i >= 0 && i < 5)
+		print_stamp(info->actions[i], *philo);
+	else if (info->stop == 1 && i == -1)
 		printf("\nAll philosophers have eaten at least %d times\n",
-			philo[0].target_eats);
-	if (pthread_mutex_unlock(&mutex_write) != 0)
+			info->target_eats);
+	else if ((info->stop == 1 && i == 5))
+	{
+		printf("\n");
+		print_stamp(info->actions[i], *philo);
+	}
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_write) != 0)
 		return ;
 }
 
-void	ft_eat(t_philo *philo, t_mulmutex *mul_mutex)
+void	ft_eat(t_philo *philo, t_info *info)
 {
 	long	time;
 
 	time = my_gettime_ms();
-	if (philo->id < philo->total_philo - 1 || philo->total_philo > 1)
+	if (philo->id < info->total_philo - 1 || info->total_philo > 1)
 	{
-		ft_eat_total(philo->id, philo, NULL, mul_mutex->mutex_total_eats);
-		ft_eat_death(philo->id, philo, NULL, mul_mutex->mutex_death);
-		ft_write(1, philo, mul_mutex->mutex_write);
+		ft_death_time(philo->id, philo, info);
+		ft_write(1, philo, info);
 	}
-	ft_write(2, philo, mul_mutex->mutex_write);
-	while (philo->time_to_eat + time > my_gettime_ms())
+	ft_write(2, philo, info);
+	ft_eat_total(philo->id, philo, info);
+	while (info->time_to_eat + time > my_gettime_ms() && info->stop == 0)
 		usleep(500);
 }
 
-void	ft_lock_mutex(t_mulmutex *mul_mutex, t_philo *philo)
+void	ft_lock_mutex(t_info *info, t_philo *philo)
 {
-	if (pthread_mutex_lock(&mul_mutex->mutex_fork[philo->id]) != 0)
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
 		return ;
-	if (philo->total_philo == 1)
+	if (info->total_philo == 1)
+		ft_write(0, philo, info);
+	if (philo->id == info->total_philo - 1)
 	{
-		ft_write(0, philo, mul_mutex->mutex_write);
-	}
-	if (philo->id == philo->total_philo - 1)
-	{
-		if (pthread_mutex_lock(&mul_mutex->mutex_fork[0]) != 0)
+		if (pthread_mutex_lock(&info->mul_mutex->mutex_fork[0]) != 0)
 			return ;
 	}
 	else
 	{
-		if (pthread_mutex_lock(&mul_mutex->mutex_fork[philo->id + 1]) != 0)
+		if (pthread_mutex_lock(&info->mul_mutex
+				->mutex_fork[philo->id + 1]) != 0)
 			return ;
-	}	
-	ft_write(0, philo, mul_mutex->mutex_write);
+	}
+	ft_write(0, philo, info);
 }
 
-void	ft_unlock_mutex(t_mulmutex *mul_mutex, t_philo *philo)
+void	ft_unlock_mutex(t_info *info, t_philo *philo)
 {
-	if (pthread_mutex_unlock(&mul_mutex->mutex_fork[philo->id]) != 0)
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
 		return ;
-	if (philo->id == philo->total_philo - 1)
+	if (philo->id == info->total_philo - 1)
 	{
-		if (pthread_mutex_unlock(&mul_mutex->mutex_fork[0]) != 0)
+		if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[0]) != 0)
 			return ;
 	}
 	else
 	{
-		if (pthread_mutex_unlock(&mul_mutex->mutex_fork[philo->id + 1]) != 0)
+		if (pthread_mutex_unlock(&info->mul_mutex
+				->mutex_fork[philo->id + 1]) != 0)
 			return ;
 	}	
 }
 
-void	*routine(void *philo_mutex)
+void	*routine(void *philo_info)
 {
-	t_mulmutex		*mul_mutex;
+	t_info			*info;
 	t_philo			*philo;
-	t_philomutex	*philo_mutex_new;
+	t_philoinfo		*philo_info_new;
 	long			time;
 
-	philo_mutex_new = (t_philomutex *) philo_mutex;
-	philo = philo_mutex_new->philo;
-	mul_mutex = philo_mutex_new->mul_mutex;
-	while (42)
+	philo_info_new = (t_philoinfo *) philo_info;
+	philo = philo_info_new->philo;
+	info = philo_info_new->info;
+	if (philo->id % 2)
+		usleep(500);
+	if (info->total_philo > 100 && philo->id % 4)
+		usleep(500);
+	while (info->stop == 0)
 	{
-		if(philo->id % 2)
-			usleep(100);
-		if(philo->id % 4)
-			usleep(100);
-		ft_lock_mutex(mul_mutex, philo);
-		ft_eat(philo, mul_mutex);
-		ft_unlock_mutex(mul_mutex, philo);
-		ft_write(3, philo, mul_mutex->mutex_write);
+		ft_lock_mutex(info, philo);
+		ft_eat(philo, info);
+		ft_unlock_mutex(info, philo);
+		ft_write(3, philo, info);
 		time = my_gettime_ms();
-		while (philo->time_to_sleep + time > my_gettime_ms())
+		while (info->time_to_sleep + time > my_gettime_ms() && info->stop == 0)
 			usleep(500);
-		ft_write(4, philo, mul_mutex->mutex_write);
+		ft_write(4, philo, info);
 	}
 	return (NULL);
 }

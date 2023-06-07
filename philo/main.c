@@ -6,53 +6,62 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 19:36:19 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 15:58:47 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_check_exit(t_philo *philo, pthread_t *thread, t_mulmutex *mul_mutex)
+void	ft_check_exit(t_philo *philo, pthread_t *thread, t_info *info)
 {
+	int	a;
+
 	while (42)
 	{
-		if (ft_eat_total(-1, philo, thread, mul_mutex->mutex_total_eats) == 1)
+		if (ft_eat_total(-1, philo, info) == 1)
 		{
-			ft_write(-1, philo, mul_mutex->mutex_write);
+			ft_write(-1, NULL, info);
 			break ;
 		}
-		if (ft_eat_death(-1, philo, thread, mul_mutex->mutex_death) == 1)
+		a = ft_death_time(-1, philo, info);
+		if (a >= 0)
 		{
-			ft_write(5, philo, mul_mutex->mutex_write);
+			ft_write(5, &philo[a], info);
 			break ;
 		}
+	}
+	a = 0;
+	while (a < info->total_philo)
+	{
+		pthread_join(thread[a], NULL);
+		a++;
 	}
 }
 
 int	main(int argc, char **argv)
 {
 	t_philo			*philo;
-	t_mulmutex		*mul_mutex;
 	pthread_t		*thread;
-	t_philomutex	**philo_mutex;
+	t_info			*info;
+	t_philoinfo		**philo_info;
 
 	if (ft_check_arg(argc, argv) == 0)
 		return (0);
-	mul_mutex = ft_mutex(ft_atoi(argv[1]));
-	if (mul_mutex == NULL)
-		return (0);
-	philo = ft_philocreate(argc, argv);
-	if (philo == NULL || philo->actions == NULL)
+	philo = ft_philocreate(argv);
+	if (philo == NULL)
 		return (0);
 	thread = malloc(sizeof(pthread_t) * ft_atoi(argv[1]));
 	if (thread == NULL)
 		return (0);
-	philo_mutex = malloc(sizeof(*philo_mutex) * ft_atoi(argv[1]));
-	if (philo_mutex == NULL)
+	info = ft_info(argc, argv);
+	if (!info || info->actions == NULL)
 		return (0);
-	if (ft_thread(philo, mul_mutex, thread, philo_mutex) == 0)
+	philo_info = malloc(sizeof(t_philoinfo *) * ft_atoi(argv[1]));
+	if (!philo_info)
 		return (0);
-	ft_check_exit(philo, thread, mul_mutex);
-	ft_free_all(philo, mul_mutex, thread, philo_mutex);
+	if (ft_thread(philo, info, thread, philo_info) == 0)
+		return (0);
+	ft_check_exit(philo, thread, info);
+	ft_free_all(philo, info, philo_info, thread);
 	return (0);
 }

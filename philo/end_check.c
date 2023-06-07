@@ -6,99 +6,67 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 13:08:28 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/05 19:42:40 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 17:02:25 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_eat_death(int i, t_philo *philo,
-	pthread_t *thread, pthread_mutex_t mutex_death)
+int	ft_eat_total(int i, t_philo *philo, t_info *info)
 {
-	long	time;
+	int	res;
 
-	time = my_gettime_ms();
-	if (pthread_mutex_lock(&mutex_death) != 0)
+	res = 0;
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_total_eats) != 0)
 		return (0);
 	if (i == -1)
 	{
-		if (ft_check_death(philo, thread) == 1)
+		if (ft_getmineats(philo, info) == info->target_eats)
 		{
-			if (pthread_mutex_unlock(&mutex_death) != 0)
-				return (0);
-			return (1);
+			res = 1;
+			info->stop = 1;
 		}
-		else
-		{
-			if (pthread_mutex_unlock(&mutex_death) != 0)
-				return (0);
-			return (0);
-		}
-	}
-	else //if (philo->time_to_die > time - philo->last_eat)
-		philo->last_eat = time - philo->birth;
-	if (pthread_mutex_unlock(&mutex_death) != 0)
-		return (0);
-	return (0);
-}
-
-int	ft_eat_total(int i, t_philo *philo,
-	pthread_t *thread, pthread_mutex_t mutex_total_eats)
-{
-	if (pthread_mutex_lock(&mutex_total_eats) != 0)
-		return (0);
-	if (i == -1)
-	{
-		if (ft_check_meals(philo, thread) == 1)
-			return (1);
-		else
-			return (0);
 	}
 	else
-	{
 		philo[0].number_eats++;
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_total_eats) != 0)
 		return (0);
-	}
-	if (pthread_mutex_unlock(&mutex_total_eats) != 0)
-		return (0);
+	return (res);
 }
 
-int	ft_check_death(t_philo *philo, pthread_t *thread)
+int	ft_death_time_change(int i, int res, t_philo *philo, t_info *info)
 {
-	int		i;
+	int	j;
 
-	i = 0;
-	while (i < philo[0].total_philo)
+	j = 0;
+	if (i == -1)
 	{
-		if (my_gettime_ms() - philo[i].last_eat
-			- philo[i].birth >= philo[i].time_to_die)
+		while (j < info->total_philo)
 		{
-			i = 0;
-			while (i < philo[0].total_philo)
+			if (my_gettime_ms() - philo[j].last_eat
+				- philo[j].birth >= info->time_to_die)
 			{
-				pthread_detach(thread[i]);
-				i++;
+				res = j;
+				info->stop = 1;
+				break ;
 			}
-			return (1);
+			j++;
 		}
-		i++;
 	}
-	return (0);
+	else
+		philo->last_eat = my_gettime_ms() - philo->birth;
+	return (res);
 }
 
-int	ft_check_meals(t_philo *philo, pthread_t *thread)
+int	ft_death_time(int i, t_philo *philo, t_info *info)
 {
-	int	i;
+	int		res;
 
-	if (ft_getmineats(philo) == philo[0].target_eats)
-	{
-		i = 0;
-		while (i < philo[0].total_philo)
-		{
-			pthread_detach(thread[i]);
-			i++;
-		}
-		return (1);
-	}
-	return (0);
+	res = -1;
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_death) != 0)
+		return (0);
+	res = ft_death_time_change(i, res, philo, info);
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_death) != 0)
+		return (0);
+	return (res);
 }
