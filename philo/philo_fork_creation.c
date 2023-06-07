@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 22:25:42 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 22:38:09 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ char	**ft_action_create(void)
 	actions[2] = "is eating";
 	actions[3] = "is sleeping";
 	actions[4] = "is thiking";
-	actions[5] = "is dead";
+	actions[5] = "died";
 	return (actions);
 }
 
