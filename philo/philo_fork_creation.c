@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 15:43:04 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 22:25:42 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,8 @@ t_info	*ft_info(int argc, char **argv)
 		info->target_eats = ft_atoi(argv[5]);
 	info->total_philo = ft_atoi(argv[1]);
 	info->actions = ft_action_create();
-	info->one_death = 0;
-	info->enough_eat = 0;
 	info->stop = 0;
 	info->mul_mutex = ft_mutex(ft_atoi(argv[1]));
-	info->actions = ft_action_create();
 	return (info);
 }
 

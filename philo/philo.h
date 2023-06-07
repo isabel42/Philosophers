@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 15:58:47 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/07 22:23:16 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ typedef struct s_info {
 	int			target_eats;
 	int			total_philo;
 	char		**actions;
-	int			one_death;
-	int			enough_eat;
 	int			stop;
 	t_mulmutex	*mul_mutex;
 }				t_info;
