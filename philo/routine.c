@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 16:04:07 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/08 14:26:48 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,15 @@ void	ft_lock_mutex(t_info *info, t_philo *philo)
 	if (pthread_mutex_lock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
 		return ;
 	if (info->total_philo == 1)
+	{
 		ft_write(0, philo, info);
+		while (info->stop == 0)
+		{
+		}
+		if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
+			return ;
+		return ;
+	}
 	if (philo->id == info->total_philo - 1)
 	{
 		if (pthread_mutex_lock(&info->mul_mutex->mutex_fork[0]) != 0)
@@ -70,12 +78,12 @@ void	ft_unlock_mutex(t_info *info, t_philo *philo)
 {
 	if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
 		return ;
-	if (philo->id == info->total_philo - 1)
+	if (philo->id == info->total_philo - 1 && info->total_philo > 1)
 	{
 		if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[0]) != 0)
 			return ;
 	}
-	else
+	else if (info->total_philo > 1)
 	{
 		if (pthread_mutex_unlock(&info->mul_mutex
 				->mutex_fork[philo->id + 1]) != 0)
