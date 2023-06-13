@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/08 14:26:48 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/13 17:43:51 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,35 @@ void	ft_eat(t_philo *philo, t_info *info)
 	time = my_gettime_ms();
 	if (philo->id < info->total_philo - 1 || info->total_philo > 1)
 	{
-		ft_death_time(philo->id, philo, info);
+		if (pthread_mutex_lock(&info->mul_mutex->mutex_death) != 0)
+			return ;
+		philo->last_eat = my_gettime_ms() - philo->birth;
+		if (pthread_mutex_unlock(&info->mul_mutex->mutex_death) != 0)
+			return ;
 		ft_write(1, philo, info);
 	}
-	ft_write(2, philo, info);
-	ft_eat_total(philo->id, philo, info);
-	while (info->time_to_eat + time > my_gettime_ms() && info->stop == 0)
-		usleep(500);
+	//ft_write(2, philo, info);
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_total_eats) != 0)
+		return ;
+	philo->number_eats++;
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_total_eats) != 0)
+		return ;
+	while (info->time_to_eat + time > my_gettime_ms())
+	{
+		if (pthread_mutex_lock(&info->mul_mutex->mutex_stop) != 0)
+			return ;
+		if (info->stop == 0)
+		{
+			if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
+				return ;
+			usleep(500);
+		}
+		else
+		{
+			if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
+				return ;
+		}
+	}
 }
 
 void	ft_lock_mutex(t_info *info, t_philo *philo)
@@ -110,11 +132,25 @@ void	*routine(void *philo_info)
 		ft_lock_mutex(info, philo);
 		ft_eat(philo, info);
 		ft_unlock_mutex(info, philo);
-		ft_write(3, philo, info);
+		//ft_write(3, philo, info);
 		time = my_gettime_ms();
-		while (info->time_to_sleep + time > my_gettime_ms() && info->stop == 0)
-			usleep(500);
-		ft_write(4, philo, info);
-	}
+		while (info->time_to_sleep + time > my_gettime_ms())
+		{
+			if (pthread_mutex_lock(&info->mul_mutex->mutex_stop) != 0)
+				return (0);
+			if (info->stop == 0)
+			{
+				if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
+					return (0);
+				usleep(500);
+			}
+			else
+			{
+				if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
+					return (0);
+			}
+		// ft_write(4, philo, info);
+		}
+	}	
 	return (NULL);
 }

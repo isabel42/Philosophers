@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 22:23:16 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/13 17:22:22 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct s_mulmutex {
 	pthread_mutex_t	mutex_write;
 	pthread_mutex_t	mutex_death;
 	pthread_mutex_t	mutex_total_eats;
+	pthread_mutex_t	mutex_stop;
 }				t_mulmutex;
 
 typedef struct s_info {
@@ -83,7 +84,7 @@ int					ft_check_int(int argc, char **argv);
 int					ft_check_arg(int argc, char **argv);
 
 //end_check.c
-int					ft_eat_total(int i, t_philo *philo, t_info *info);
-int					ft_death_time(int i, t_philo *philo, t_info *info);
+int					ft_eat_total(t_philo *philo, t_info *info);
+int					ft_death_time(t_philo *philo, t_info *info);
 
 #endif

@@ -14,13 +14,13 @@ CC		= gcc
 
 RM		= rm -f
 
-CFLAGS	= -Wextra -Wall -Werror
+CFLAGS	= -Wextra -Wall -Werror -pthread -fsanitize=thread
 
 .c.o:	
 			${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 ${NAME}: 	${OBJS}
-			${CC} ${CFLAGS} ${OBJS} -o ${NAME}  -pthread
+			${CC} ${CFLAGS} ${OBJS} -o ${NAME}  
 
 all:		${NAME}
 
