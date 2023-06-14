@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/13 17:22:22 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/14 18:31:00 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,19 @@
 enum e_act {righ_fork, left_fork, eating, sleeping, thinking};
 
 typedef struct s_philo {
-	int			id;
-	long		birth;
-	long		death;
-	long		last_eat;
-	int			number_eats;
+	int				id;
+	int				birth;
+	int				death;
+	int				last_eat;
+	int				number_eats;
+	int				time_to_die;	
+	int				time_to_eat;
+	int				time_to_sleep;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*left_fork;
+	int				total_philo;
+	char			**actions;
+	pthread_mutex_t	*mutex_local;
 }				t_philo;
 
 typedef struct s_mulmutex {
@@ -37,9 +45,9 @@ typedef struct s_mulmutex {
 }				t_mulmutex;
 
 typedef struct s_info {
-	long		time_to_die;	
-	long		time_to_eat;
-	long		time_to_sleep;
+	int			time_to_die;	
+	int			time_to_eat;
+	int			time_to_sleep;
 	int			target_eats;
 	int			total_philo;
 	char		**actions;
@@ -56,19 +64,20 @@ typedef struct s_philoinfo {
 int					ft_atoi(const char *str);
 int					ft_strlen(char *s);
 void				print_stamp(char *mess, t_philo philo);
-long				my_gettime_ms(void);
+int					my_gettime_ms(void);
 int					ft_getmineats(t_philo *philo, t_info *info);
 
 // routine.c
+int					ft_stop_check(int *stop, pthread_mutex_t *mutex_stop);
 void				ft_write(int i, t_philo *philo, t_info *info);
-void				ft_eat(t_philo *philo, t_info *info);
-void				ft_lock_mutex(t_info *info, t_philo *philo);
-void				ft_unlock_mutex(t_info *info, t_philo *philo);
+int					ft_update(int *numb_eats, int new_numb_eats, pthread_mutex_t *mutex_local);
+void				my_usleep(int waiting_time, t_info *info);
+int					ft_eat(t_philo *philo, t_info *info);
 void				*routine(void *philo_fork);
 
 // philo_fork_creation.c 
 t_info				*ft_info(int argc, char **argv);
-t_philo				*ft_philocreate(char **argv);
+t_philo				*ft_philocreate(char **argv, pthread_mutex_t *forks);
 t_mulmutex			*ft_mutex(int f);
 char				**ft_action_create(void);
 int					ft_thread(t_philo *philo, t_info *info,
@@ -84,7 +93,7 @@ int					ft_check_int(int argc, char **argv);
 int					ft_check_arg(int argc, char **argv);
 
 //end_check.c
-int					ft_eat_total(t_philo *philo, t_info *info);
-int					ft_death_time(t_philo *philo, t_info *info);
+// int					ft_eat_total(t_philo *philo, t_info *info);
+// int					ft_death_time(t_philo *philo, t_info *info);
 
 #endif

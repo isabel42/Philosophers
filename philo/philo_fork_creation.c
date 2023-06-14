@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 22:38:09 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/14 17:06:30 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ t_info	*ft_info(int argc, char **argv)
 	return (info);
 }
 
-t_philo	*ft_philocreate(char **argv)
+t_philo	*ft_philocreate(char **argv, pthread_mutex_t *forks)
 {
 	t_philo	*philo;
 	int		i;
@@ -47,6 +47,17 @@ t_philo	*ft_philocreate(char **argv)
 		philo[i].birth = my_gettime_ms();
 		philo[i].number_eats = 0;
 		philo[i].last_eat = 0;
+		philo[i].time_to_die = ft_atoi(argv[2]);
+		philo[i].time_to_eat = ft_atoi(argv[3]);
+		philo[i].time_to_sleep = ft_atoi(argv[4]);
+		philo[i].left_fork = &forks[i];
+		philo[i].right_fork = &forks[(i + 1) % ft_atoi(argv[1])];
+		philo[i].actions = ft_action_create();
+		philo[i].total_philo = ft_atoi(argv[1]);
+		philo[i].mutex_local = malloc(sizeof(pthread_mutex_t));
+		if(!philo[i].mutex_local)
+			return (NULL);
+		pthread_mutex_init(philo[i].mutex_local, NULL);
 		i++;
 	}
 	return (philo);
@@ -61,17 +72,17 @@ t_mulmutex	*ft_mutex(int f)
 	mul_mutex = malloc(sizeof(t_mulmutex));
 	if (mul_mutex == NULL)
 		return (NULL);
-	mul_mutex->mutex_fork = malloc(sizeof(pthread_mutex_t) * f);
-	if (mul_mutex->mutex_fork == NULL)
+	mul_mutex->mutex_fork = malloc(sizeof(t_mulmutex) * f);
+	if (mul_mutex == NULL)
 		return (NULL);
-	while (i < f)
+	while(i < f)
 	{
 		pthread_mutex_init(&mul_mutex->mutex_fork[i], NULL);
 		i++;
 	}
 	pthread_mutex_init(&mul_mutex->mutex_write, NULL);
 	pthread_mutex_init(&mul_mutex->mutex_death, NULL);
-	pthread_mutex_init(&mul_mutex->mutex_total_eats, NULL);
+	pthread_mutex_init(&mul_mutex->mutex_stop, NULL);
 	return (mul_mutex);
 }
 

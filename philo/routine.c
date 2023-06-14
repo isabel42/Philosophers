@@ -6,22 +6,34 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/13 17:43:51 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/14 22:15:30 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+int	ft_stop_check(int *stop, pthread_mutex_t *mutex_stop)
+{
+	int	res;
+
+	if (pthread_mutex_lock(mutex_stop))
+		return (-1);
+	res = *stop;
+	if (pthread_mutex_unlock(mutex_stop))
+		return (-1);
+	return (res);
+}
+
 void	ft_write(int i, t_philo *philo, t_info *info)
 {
 	if (pthread_mutex_lock(&info->mul_mutex->mutex_write) != 0)
 		return ;
-	if (info->stop == 0 && i >= 0 && i < 5)
+	if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i >= 0 && i < 5)
 		print_stamp(info->actions[i], *philo);
-	else if (info->stop == 1 && i == -1)
+	else if (ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == -1)
 		printf("\nAll philosophers have eaten at least %d times\n",
 			info->target_eats);
-	else if ((info->stop == 1 && i == 5))
+	else if (ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == 5)
 	{
 		printf("\n");
 		print_stamp(info->actions[i], *philo);
@@ -29,88 +41,43 @@ void	ft_write(int i, t_philo *philo, t_info *info)
 	if (pthread_mutex_unlock(&info->mul_mutex->mutex_write) != 0)
 		return ;
 }
-
-void	ft_eat(t_philo *philo, t_info *info)
+int	ft_update(int *numb_eats, int new_numb_eats, pthread_mutex_t *mutex_local)
 {
-	long	time;
-
-	time = my_gettime_ms();
-	if (philo->id < info->total_philo - 1 || info->total_philo > 1)
-	{
-		if (pthread_mutex_lock(&info->mul_mutex->mutex_death) != 0)
-			return ;
-		philo->last_eat = my_gettime_ms() - philo->birth;
-		if (pthread_mutex_unlock(&info->mul_mutex->mutex_death) != 0)
-			return ;
-		ft_write(1, philo, info);
-	}
-	//ft_write(2, philo, info);
-	if (pthread_mutex_lock(&info->mul_mutex->mutex_total_eats) != 0)
-		return ;
-	philo->number_eats++;
-	if (pthread_mutex_unlock(&info->mul_mutex->mutex_total_eats) != 0)
-		return ;
-	while (info->time_to_eat + time > my_gettime_ms())
-	{
-		if (pthread_mutex_lock(&info->mul_mutex->mutex_stop) != 0)
-			return ;
-		if (info->stop == 0)
-		{
-			if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
-				return ;
-			usleep(500);
-		}
-		else
-		{
-			if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
-				return ;
-		}
-	}
+	if (pthread_mutex_lock(mutex_local))
+		return (-1);
+	*numb_eats = new_numb_eats;
+	if (pthread_mutex_unlock(mutex_local))
+		return (-1);
+	return (0);
 }
 
-void	ft_lock_mutex(t_info *info, t_philo *philo)
+void	my_usleep(int waiting_time, t_info *info)
 {
-	if (pthread_mutex_lock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
-		return ;
-	if (info->total_philo == 1)
-	{
-		ft_write(0, philo, info);
-		while (info->stop == 0)
-		{
-		}
-		if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
-			return ;
-		return ;
-	}
-	if (philo->id == info->total_philo - 1)
-	{
-		if (pthread_mutex_lock(&info->mul_mutex->mutex_fork[0]) != 0)
-			return ;
-	}
-	else
-	{
-		if (pthread_mutex_lock(&info->mul_mutex
-				->mutex_fork[philo->id + 1]) != 0)
-			return ;
-	}
+	int	ac_time;
+
+	ac_time = my_gettime_ms();
+	while (waiting_time + ac_time > my_gettime_ms()
+			&& !ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop))
+		usleep(500);
+	return ;
+}
+int	ft_eat(t_philo *philo, t_info *info)
+{
+	if (pthread_mutex_lock(philo->left_fork) != 0)
+		return (-1);
 	ft_write(0, philo, info);
-}
-
-void	ft_unlock_mutex(t_info *info, t_philo *philo)
-{
-	if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[philo->id]) != 0)
-		return ;
-	if (philo->id == info->total_philo - 1 && info->total_philo > 1)
-	{
-		if (pthread_mutex_unlock(&info->mul_mutex->mutex_fork[0]) != 0)
-			return ;
-	}
-	else if (info->total_philo > 1)
-	{
-		if (pthread_mutex_unlock(&info->mul_mutex
-				->mutex_fork[philo->id + 1]) != 0)
-			return ;
-	}	
+	if (pthread_mutex_lock(philo->right_fork) != 0)
+		return (-1);
+	ft_write(0, philo, info);
+	ft_write(2, philo, info);
+	ft_update(&philo->number_eats, philo->number_eats + 1, philo->mutex_local);
+	ft_update(&philo->last_eat, my_gettime_ms(), philo->mutex_local);
+	my_usleep(philo->time_to_eat, info);
+	if (pthread_mutex_unlock(philo->left_fork) != 0)
+		return (-1);
+	if (pthread_mutex_unlock(philo->right_fork) != 0)
+		return (-1);
+	return(0);
 }
 
 void	*routine(void *philo_info)
@@ -118,7 +85,6 @@ void	*routine(void *philo_info)
 	t_info			*info;
 	t_philo			*philo;
 	t_philoinfo		*philo_info_new;
-	long			time;
 
 	philo_info_new = (t_philoinfo *) philo_info;
 	philo = philo_info_new->philo;
@@ -127,30 +93,13 @@ void	*routine(void *philo_info)
 		usleep(500);
 	if (info->total_philo > 100 && philo->id % 4)
 		usleep(500);
-	while (info->stop == 0)
+	while (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop))
 	{
-		ft_lock_mutex(info, philo);
-		ft_eat(philo, info);
-		ft_unlock_mutex(info, philo);
-		//ft_write(3, philo, info);
-		time = my_gettime_ms();
-		while (info->time_to_sleep + time > my_gettime_ms())
-		{
-			if (pthread_mutex_lock(&info->mul_mutex->mutex_stop) != 0)
-				return (0);
-			if (info->stop == 0)
-			{
-				if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
-					return (0);
-				usleep(500);
-			}
-			else
-			{
-				if (pthread_mutex_unlock(&info->mul_mutex->mutex_stop) != 0)
-					return (0);
-			}
-		// ft_write(4, philo, info);
-		}
+		if (ft_eat(philo, info) == -1)
+			return (NULL);
+		ft_write(3, philo, info);
+		my_usleep(philo->time_to_eat, info);
+		ft_write(4, philo, info);
 	}	
 	return (NULL);
 }

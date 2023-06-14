@@ -14,7 +14,7 @@ CC		= gcc
 
 RM		= rm -f
 
-CFLAGS	= -Wextra -Wall -Werror -pthread -fsanitize=thread
+CFLAGS	= -Wextra -Wall -Werror -pthread -g -fsanitize=thread
 
 .c.o:	
 			${CC} ${CFLAGS} -c $< -o ${<:.c=.o}

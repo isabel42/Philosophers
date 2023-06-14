@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/07 11:45:31 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/14 17:53:56 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,13 @@ void	print_stamp(char *mess, t_philo philo)
 	printf("%ld ms: Philo %d %s\n", time - philo.birth, philo.id, mess);
 }
 
-long	my_gettime_ms(void)
+int	my_gettime_ms(void)
 {
-	long			time;
+	int				time;
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
-	time = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
+	time = (int) current_time.tv_sec * 1000 + (int) current_time.tv_usec / 1000;
 	return (time);
 }
 
@@ -71,11 +71,15 @@ int	ft_getmineats(t_philo *philo, t_info *info)
 
 	i = 0;
 	min = philo[0].number_eats;
+	// if (pthread_mutex_lock(&info->mul_mutex->mutex_total_eats) != 0)
+	// 	return (-1);
 	while (i < info->total_philo)
 	{
 		if (philo[i].number_eats < min)
 			min = philo[i].number_eats;
 		i++;
 	}
+	// if (pthread_mutex_unlock(&info->mul_mutex->mutex_total_eats) != 0)
+	// 	return (-1);
 	return (min);
 }
