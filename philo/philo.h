@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 14:42:04 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 16:22:36 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,9 @@ typedef struct s_philoinfo {
 
 // philo_utils.c
 int					ft_atoi(const char *str);
-void				print_stamp(char *mess, t_philo philo);
+int					print_stamp(char *mess, t_philo philo);
 int					my_gettime_ms(void);
-void				ft_write(int i, t_philo *philo, t_info *info);
+int					ft_write(int i, t_philo *philo, t_info *info);
 void				my_usleep(int waiting_time, t_info *info);
 
 // routine.c

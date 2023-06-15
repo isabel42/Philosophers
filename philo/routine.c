@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 13:51:55 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 16:22:55 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,11 @@ void	*routine(void *philo_info)
 	{
 		if (ft_eat(philo, info) == -1)
 			return (NULL);
-		ft_write(3, philo, info);
+		if (ft_write(3, philo, info) == -1)
+			return (NULL);
 		my_usleep(philo->time_to_eat, info);
-		ft_write(4, philo, info);
+		if (ft_write(4, philo, info) == -1)
+			return (NULL);
 	}	
 	return (NULL);
 }
