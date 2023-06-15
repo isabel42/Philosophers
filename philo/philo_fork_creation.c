@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/14 17:06:30 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 10:17:51 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ t_philo	*ft_philocreate(char **argv, pthread_mutex_t *forks)
 		philo[i].actions = ft_action_create();
 		philo[i].total_philo = ft_atoi(argv[1]);
 		philo[i].mutex_local = malloc(sizeof(pthread_mutex_t));
-		if(!philo[i].mutex_local)
+		if (!philo[i].mutex_local)
 			return (NULL);
 		pthread_mutex_init(philo[i].mutex_local, NULL);
 		i++;
@@ -93,8 +93,8 @@ char	**ft_action_create(void)
 	actions = malloc(sizeof(char *) * 6);
 	if (!actions)
 		return (NULL);
-	actions[0] = "has taken a fork";
-	actions[1] = "has taken a fork";
+	actions[0] = "has taken left fork";
+	actions[1] = "has taken right fork";
 	actions[2] = "is eating";
 	actions[3] = "is sleeping";
 	actions[4] = "is thiking";

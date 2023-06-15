@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:23:46 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/14 22:15:30 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 10:29:55 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,23 +24,6 @@ int	ft_stop_check(int *stop, pthread_mutex_t *mutex_stop)
 	return (res);
 }
 
-void	ft_write(int i, t_philo *philo, t_info *info)
-{
-	if (pthread_mutex_lock(&info->mul_mutex->mutex_write) != 0)
-		return ;
-	if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i >= 0 && i < 5)
-		print_stamp(info->actions[i], *philo);
-	else if (ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == -1)
-		printf("\nAll philosophers have eaten at least %d times\n",
-			info->target_eats);
-	else if (ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == 5)
-	{
-		printf("\n");
-		print_stamp(info->actions[i], *philo);
-	}
-	if (pthread_mutex_unlock(&info->mul_mutex->mutex_write) != 0)
-		return ;
-}
 int	ft_update(int *numb_eats, int new_numb_eats, pthread_mutex_t *mutex_local)
 {
 	if (pthread_mutex_lock(mutex_local))
@@ -61,17 +44,35 @@ void	my_usleep(int waiting_time, t_info *info)
 		usleep(500);
 	return ;
 }
+
+int	ft_get_tot_philo(t_philo *philo)
+{
+	int	cp_total_philo;
+
+	pthread_mutex_lock(philo->mutex_local);
+	cp_total_philo = philo->total_philo;
+	pthread_mutex_unlock(philo->mutex_local);
+	return (cp_total_philo);
+}
+
 int	ft_eat(t_philo *philo, t_info *info)
 {
 	if (pthread_mutex_lock(philo->left_fork) != 0)
 		return (-1);
 	ft_write(0, philo, info);
+	if (ft_get_tot_philo(philo) == 1)
+	{
+		while (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop))
+			usleep(500);
+		if (pthread_mutex_unlock(philo->left_fork) != 0)
+		return (-1);
+	}
 	if (pthread_mutex_lock(philo->right_fork) != 0)
 		return (-1);
-	ft_write(0, philo, info);
+	ft_write(1, philo, info);
 	ft_write(2, philo, info);
 	ft_update(&philo->number_eats, philo->number_eats + 1, philo->mutex_local);
-	ft_update(&philo->last_eat, my_gettime_ms(), philo->mutex_local);
+	ft_update(&philo->last_eat, my_gettime_ms() - philo->birth, philo->mutex_local);
 	my_usleep(philo->time_to_eat, info);
 	if (pthread_mutex_unlock(philo->left_fork) != 0)
 		return (-1);

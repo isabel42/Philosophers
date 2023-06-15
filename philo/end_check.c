@@ -6,50 +6,73 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 13:08:28 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/14 18:34:25 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 10:26:43 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <limits.h>
 
-// int	ft_eat_total(t_philo *philo, t_info *info)
-// {
-// 	int	res;
+void	ft_cp_die_eat_birth(t_philo *philo, int *cp_time_to_die, int *cp_last_eat, int *cp_birth)
+{
+	pthread_mutex_lock(philo->mutex_local);
+	*cp_time_to_die = philo->time_to_die;
+	*cp_last_eat = philo->last_eat;
+	*cp_birth = philo->birth;
+	pthread_mutex_unlock(philo->mutex_local);
+}
 
-// 	// if (pthread_mutex_lock(&info->mul_mutex->mutex_total_eats) != 0)
-// 	// 	return (-1);
-// 	res = 0;
-// 	if (ft_getmineats(philo, info) == info->target_eats)
-// 	{
-// 		res = 1;
-// 		ft_update(&info->stop, 1, &info->mul_mutex->mutex_stop);
-// 	}
-// 	// if (pthread_mutex_unlock(&info->mul_mutex->mutex_total_eats) != 0)
-// 	// 	return (0);
-// 	return (res);
-// }
+void	philo_die(t_philo *philo, t_info *info)
+{
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_death))
+		return ;
+	ft_write(5, philo, info);
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_death))
+		return ;
+}
 
-// int	ft_death_time(t_philo *philo, t_info *info)
-// {
-// 	int	res;
-// 	int	j;
+void	ft_get_min_eat(t_philo *philo, int *min_eat)
+{
+	pthread_mutex_lock(philo->mutex_local);
+	if (philo->number_eats < *min_eat)
+		*min_eat = philo->number_eats;
+	pthread_mutex_unlock(philo->mutex_local);
+}
 
-// 	res = -1;
-// 	if (pthread_mutex_lock(&info->mul_mutex->mutex_death) != 0)
-// 		return (0);
-// 	j = 0;
-// 	while (j < info->total_philo)
-// 	{
-// 		if (my_gettime_ms() - philo[j].last_eat
-// 			- philo[j].birth >= info->time_to_die)
-// 		{
-// 			res = j;
-// 			info->stop = 1;
-// 			break ;
-// 		}
-// 		j++;
-// 	}
-// 	if (pthread_mutex_unlock(&info->mul_mutex->mutex_death) != 0)
-// 		return (0);
-// 	return (res);
-// }
+void ft_join(t_info *info, pthread_t *thread)
+{
+	int	a;
+
+	a = 0;
+	while (a < info->total_philo)
+	{
+		pthread_join(thread[a], NULL);
+		a++;
+	}
+}
+
+void	ft_check_exit(t_philo *philo, pthread_t *thread, t_info *info)
+{
+	int		i;
+	int		cp_last_eat;
+	int		cp_time_to_die;
+	int		cp_birth;
+	int		min_eat;
+
+	while (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop))
+	{
+		i = 0;
+		min_eat = INT_MAX;
+		while (i < info->total_philo)
+		{
+			ft_cp_die_eat_birth(&philo[i], &cp_time_to_die, &cp_last_eat, &cp_birth);
+			if (my_gettime_ms() - cp_last_eat - cp_birth >= cp_time_to_die)
+				philo_die(&philo[i], info);
+			ft_get_min_eat(&philo[i], &min_eat);
+			i++;
+		}
+		if (min_eat >= info->target_eats && info->target_eats != -1)
+			ft_write(-1, philo, info);
+	}
+	ft_join(info, thread);
+}

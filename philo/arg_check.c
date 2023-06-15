@@ -6,11 +6,21 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 09:46:28 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/01 11:54:31 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/14 22:24:05 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	ft_strlen(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
 
 int	ft_check_digit(int argc, char **argv)
 {

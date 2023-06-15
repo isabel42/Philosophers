@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/14 18:31:00 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 10:04:50 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,12 @@ typedef struct s_philoinfo {
 
 // philo_utils.c
 int					ft_atoi(const char *str);
-int					ft_strlen(char *s);
 void				print_stamp(char *mess, t_philo philo);
 int					my_gettime_ms(void);
-int					ft_getmineats(t_philo *philo, t_info *info);
+void				ft_write(int i, t_philo *philo, t_info *info);
 
 // routine.c
 int					ft_stop_check(int *stop, pthread_mutex_t *mutex_stop);
-void				ft_write(int i, t_philo *philo, t_info *info);
 int					ft_update(int *numb_eats, int new_numb_eats, pthread_mutex_t *mutex_local);
 void				my_usleep(int waiting_time, t_info *info);
 int					ft_eat(t_philo *philo, t_info *info);
@@ -88,12 +86,11 @@ void				ft_free_all(t_philo *philo, t_info *info,
 						t_philoinfo **philo_info, pthread_t *thread);
 
 // arg_check.c
+int					ft_strlen(char *s);
 int					ft_check_digit(int argc, char **argv);
 int					ft_check_int(int argc, char **argv);
 int					ft_check_arg(int argc, char **argv);
 
 //end_check.c
-// int					ft_eat_total(t_philo *philo, t_info *info);
-// int					ft_death_time(t_philo *philo, t_info *info);
-
+void				ft_check_exit(t_philo *philo, pthread_t *thread, t_info *info);
 #endif

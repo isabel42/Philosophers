@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/14 17:53:56 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 10:26:34 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,6 @@ int	ft_atoi(const char *str)
 	return (sign * result);
 }
 
-int	ft_strlen(char *s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
-}
-
 void	print_stamp(char *mess, t_philo philo)
 {
 	long	time;
@@ -64,22 +54,24 @@ int	my_gettime_ms(void)
 	return (time);
 }
 
-int	ft_getmineats(t_philo *philo, t_info *info)
+void	ft_write(int i, t_philo *philo, t_info *info)
 {
-	int	i;
-	int	min;
-
-	i = 0;
-	min = philo[0].number_eats;
-	// if (pthread_mutex_lock(&info->mul_mutex->mutex_total_eats) != 0)
-	// 	return (-1);
-	while (i < info->total_philo)
+	if (pthread_mutex_lock(&info->mul_mutex->mutex_write) != 0)
+		return ;
+	if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i >= 0 && i < 5)
+		print_stamp(info->actions[i], *philo);
+	else if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == -1)
 	{
-		if (philo[i].number_eats < min)
-			min = philo[i].number_eats;
-		i++;
+		ft_update(&info->stop, 1, &info->mul_mutex->mutex_stop);
+		printf("\nAll philosophers have eaten at least %d times\n",
+			info->target_eats);
 	}
-	// if (pthread_mutex_unlock(&info->mul_mutex->mutex_total_eats) != 0)
-	// 	return (-1);
-	return (min);
+	else if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == 5)
+	{
+		ft_update(&info->stop, 1, &info->mul_mutex->mutex_stop);
+		printf("\n");
+		print_stamp(info->actions[i], *philo);
+	}
+	if (pthread_mutex_unlock(&info->mul_mutex->mutex_write) != 0)
+		return ;
 }
