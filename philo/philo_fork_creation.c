@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 13:50:19 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 14:42:04 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,6 @@ t_info	*ft_info(int argc, char **argv)
 	info = malloc(sizeof(t_info));
 	if (!info)
 		return (NULL);
-	info->time_to_die = ft_atoi(argv[2]);
-	info->time_to_eat = ft_atoi(argv[3]);
-	info->time_to_sleep = ft_atoi(argv[4]);
 	info->target_eats = -1;
 	if (argc == 6)
 		info->target_eats = ft_atoi(argv[5]);

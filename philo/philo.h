@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 13:44:12 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 14:42:04 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,6 @@ typedef struct s_mulmutex {
 }				t_mulmutex;
 
 typedef struct s_info {
-	int			time_to_die;	
-	int			time_to_eat;
-	int			time_to_sleep;
 	int			target_eats;
 	int			total_philo;
 	char		**actions;
