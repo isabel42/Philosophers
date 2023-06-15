@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 16:24:22 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 16:28:01 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	ft_write(int i, t_philo *philo, t_info *info)
 				return (-1);
 		}
 		else if (ft_update(&info->stop, 1, &info->mul_mutex->mutex_stop) == -1)
-				return (-1);
+			return (-1);
 		if (i == -1)
 		{
 			printf("\nAll philosophers have eaten at least %d times\n",
