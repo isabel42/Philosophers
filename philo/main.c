@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 12:57:56 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 10:32:57 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 13:39:25 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	main(int argc, char **argv)
 	info = ft_info(argc, argv);
 	if (!info || info->actions == NULL)
 		return (0);
-	philo = ft_philocreate(argv, info->mul_mutex->mutex_fork);
+	philo = ft_philocreate(argv, info->mul_mutex);
 	if (philo == NULL)
 		return (0);
 	philo_info = malloc(sizeof(t_philoinfo *) * ft_atoi(argv[1]));

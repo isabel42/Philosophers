@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 15:38:55 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 10:17:51 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 13:50:19 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ t_info	*ft_info(int argc, char **argv)
 	return (info);
 }
 
-t_philo	*ft_philocreate(char **argv, pthread_mutex_t *forks)
+t_philo	*ft_philocreate(char **argv, t_mulmutex *mul_mutex)
 {
 	t_philo	*philo;
 	int		i;
@@ -50,14 +50,11 @@ t_philo	*ft_philocreate(char **argv, pthread_mutex_t *forks)
 		philo[i].time_to_die = ft_atoi(argv[2]);
 		philo[i].time_to_eat = ft_atoi(argv[3]);
 		philo[i].time_to_sleep = ft_atoi(argv[4]);
-		philo[i].left_fork = &forks[i];
-		philo[i].right_fork = &forks[(i + 1) % ft_atoi(argv[1])];
-		philo[i].actions = ft_action_create();
+		philo[i].left_fork = &mul_mutex->mutex_fork[i];
+		philo[i].right_fork = &mul_mutex->mutex_fork[(i + 1)
+			% ft_atoi(argv[1])];
 		philo[i].total_philo = ft_atoi(argv[1]);
-		philo[i].mutex_local = malloc(sizeof(pthread_mutex_t));
-		if (!philo[i].mutex_local)
-			return (NULL);
-		pthread_mutex_init(philo[i].mutex_local, NULL);
+		philo[i].mutex_local = &mul_mutex->mutex_local[i];
 		i++;
 	}
 	return (philo);
@@ -73,11 +70,15 @@ t_mulmutex	*ft_mutex(int f)
 	if (mul_mutex == NULL)
 		return (NULL);
 	mul_mutex->mutex_fork = malloc(sizeof(t_mulmutex) * f);
-	if (mul_mutex == NULL)
+	if (mul_mutex->mutex_fork == NULL)
 		return (NULL);
-	while(i < f)
+	mul_mutex->mutex_local = malloc(sizeof(pthread_mutex_t) * f);
+	if (mul_mutex->mutex_local == NULL)
+		return (NULL);
+	while (i < f)
 	{
 		pthread_mutex_init(&mul_mutex->mutex_fork[i], NULL);
+		pthread_mutex_init(&mul_mutex->mutex_local[i], NULL);
 		i++;
 	}
 	pthread_mutex_init(&mul_mutex->mutex_write, NULL);

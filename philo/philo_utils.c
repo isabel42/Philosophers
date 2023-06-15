@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 15:06:41 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 10:26:34 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 13:51:27 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,18 @@ void	ft_write(int i, t_philo *philo, t_info *info)
 {
 	if (pthread_mutex_lock(&info->mul_mutex->mutex_write) != 0)
 		return ;
-	if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i >= 0 && i < 5)
+	if (!ft_stop_check(&info->stop,
+			&info->mul_mutex->mutex_stop) && i >= 0 && i < 5)
 		print_stamp(info->actions[i], *philo);
-	else if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == -1)
+	else if (!ft_stop_check(&info->stop,
+			&info->mul_mutex->mutex_stop) && i == -1)
 	{
 		ft_update(&info->stop, 1, &info->mul_mutex->mutex_stop);
 		printf("\nAll philosophers have eaten at least %d times\n",
 			info->target_eats);
 	}
-	else if (!ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop) && i == 5)
+	else if (!ft_stop_check(&info->stop,
+			&info->mul_mutex->mutex_stop) && i == 5)
 	{
 		ft_update(&info->stop, 1, &info->mul_mutex->mutex_stop);
 		printf("\n");
@@ -74,4 +77,15 @@ void	ft_write(int i, t_philo *philo, t_info *info)
 	}
 	if (pthread_mutex_unlock(&info->mul_mutex->mutex_write) != 0)
 		return ;
+}
+
+void	my_usleep(int waiting_time, t_info *info)
+{
+	int	ac_time;
+
+	ac_time = my_gettime_ms();
+	while (waiting_time + ac_time > my_gettime_ms()
+		&& !ft_stop_check(&info->stop, &info->mul_mutex->mutex_stop))
+		usleep(500);
+	return ;
 }

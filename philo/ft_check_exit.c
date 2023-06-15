@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   end_check.c                                        :+:      :+:    :+:   */
+/*   ft_check_exit.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 13:08:28 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 10:26:43 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 13:30:32 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <limits.h>
 
-void	ft_cp_die_eat_birth(t_philo *philo, int *cp_time_to_die, int *cp_last_eat, int *cp_birth)
+void	ft_cp_die_eat_birth(t_philo *philo,
+			int *cp_time_to_die, int *cp_last_eat, int *cp_birth)
 {
 	pthread_mutex_lock(philo->mutex_local);
 	*cp_time_to_die = philo->time_to_die;
@@ -39,7 +40,7 @@ void	ft_get_min_eat(t_philo *philo, int *min_eat)
 	pthread_mutex_unlock(philo->mutex_local);
 }
 
-void ft_join(t_info *info, pthread_t *thread)
+void	ft_join(t_info *info, pthread_t *thread)
 {
 	int	a;
 
@@ -65,7 +66,8 @@ void	ft_check_exit(t_philo *philo, pthread_t *thread, t_info *info)
 		min_eat = INT_MAX;
 		while (i < info->total_philo)
 		{
-			ft_cp_die_eat_birth(&philo[i], &cp_time_to_die, &cp_last_eat, &cp_birth);
+			ft_cp_die_eat_birth(&philo[i],
+				&cp_time_to_die, &cp_last_eat, &cp_birth);
 			if (my_gettime_ms() - cp_last_eat - cp_birth >= cp_time_to_die)
 				philo_die(&philo[i], info);
 			ft_get_min_eat(&philo[i], &min_eat);

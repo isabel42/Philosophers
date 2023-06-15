@@ -6,7 +6,7 @@
 /*   By: itovar-n <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 13:09:05 by itovar-n          #+#    #+#             */
-/*   Updated: 2023/06/15 10:04:50 by itovar-n         ###   ########.fr       */
+/*   Updated: 2023/06/15 13:44:12 by itovar-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ typedef struct s_philo {
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
 	int				total_philo;
-	char			**actions;
 	pthread_mutex_t	*mutex_local;
 }				t_philo;
 
@@ -40,7 +39,7 @@ typedef struct s_mulmutex {
 	pthread_mutex_t	*mutex_fork;
 	pthread_mutex_t	mutex_write;
 	pthread_mutex_t	mutex_death;
-	pthread_mutex_t	mutex_total_eats;
+	pthread_mutex_t	*mutex_local;
 	pthread_mutex_t	mutex_stop;
 }				t_mulmutex;
 
@@ -65,17 +64,19 @@ int					ft_atoi(const char *str);
 void				print_stamp(char *mess, t_philo philo);
 int					my_gettime_ms(void);
 void				ft_write(int i, t_philo *philo, t_info *info);
+void				my_usleep(int waiting_time, t_info *info);
 
 // routine.c
 int					ft_stop_check(int *stop, pthread_mutex_t *mutex_stop);
-int					ft_update(int *numb_eats, int new_numb_eats, pthread_mutex_t *mutex_local);
-void				my_usleep(int waiting_time, t_info *info);
+int					ft_update(int *numb_eats,
+						int new_numb_eats, pthread_mutex_t *mutex_local);
+int					ft_get_tot_philo(t_philo *philo);
 int					ft_eat(t_philo *philo, t_info *info);
 void				*routine(void *philo_fork);
 
 // philo_fork_creation.c 
 t_info				*ft_info(int argc, char **argv);
-t_philo				*ft_philocreate(char **argv, pthread_mutex_t *forks);
+t_philo				*ft_philocreate(char **argv, t_mulmutex *mul_mutex);
 t_mulmutex			*ft_mutex(int f);
 char				**ft_action_create(void);
 int					ft_thread(t_philo *philo, t_info *info,
@@ -91,6 +92,12 @@ int					ft_check_digit(int argc, char **argv);
 int					ft_check_int(int argc, char **argv);
 int					ft_check_arg(int argc, char **argv);
 
-//end_check.c
-void				ft_check_exit(t_philo *philo, pthread_t *thread, t_info *info);
+//ft_check_exit.c
+void				ft_cp_die_eat_birth(t_philo *philo,
+						int *cp_time_to_die, int *cp_last_eat, int *cp_birth);
+void				philo_die(t_philo *philo, t_info *info);
+void				ft_get_min_eat(t_philo *philo, int *min_eat);
+void				ft_join(t_info *info, pthread_t *thre);
+void				ft_check_exit(t_philo *philo,
+						pthread_t *thread, t_info *info);
 #endif
